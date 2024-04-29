@@ -1,4 +1,6 @@
 import * as Diff from 'diff';
+export { PreserveLine } from './preserve-line';
+export { options } from './options';
 
 enum PairingMode {
   EVEN = 'even',

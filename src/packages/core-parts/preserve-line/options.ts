@@ -1,0 +1,21 @@
+import type { SupportOptions } from 'prettier';
+
+export const options: SupportOptions = {
+  preserveFirstBlankLine: {
+    category: 'Format',
+    type: "boolean",
+    default: true,
+    description: "Preserve first blank line of a block.",
+    oppositeDescription:
+      "Do not preserve first blank line of a block; Prettier's default behavior.",
+  },
+  preserveEolMarker: {
+    category: 'Format',
+    type: "boolean",
+    default: true,
+    description: "Preserve a line if it ends with '//', by applying '// prettier-ignore' to the line.",
+    oppositeDescription:
+      "End-of-line '//' is treated as usual by Prettier.",
+  },
+
+};

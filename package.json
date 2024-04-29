@@ -1,21 +1,23 @@
 {
-  "name": "prettier-plugin-merge",
-  "version": "0.6.0",
-  "description": "A Prettier plugin that sequentially merges the formatting results of other Prettier plugins.",
+  "name": "@yikes2000/prettier-plugin-merge-preserve",
+  "version": "0.6.1-alpha.0",
+  "description": "A Prettier plugin that preserves desired lines while sequentially merges the formatting results of other Prettier plugins.",
   "keywords": [
     "prettier",
     "plugin",
     "merge",
     "sequential",
     "formatting",
-    "multiple"
+    "multiple",
+    "preserve",
+    "line"
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ony3000/prettier-plugin-merge.git"
+    "url": "git+https://github.com/yikes2000/prettier-plugin-merge-preserve.git"
   },
   "license": "MIT",
-  "author": "Hyeonjong <nianelo4@gmail.com>",
+  "author": "Andy Lee <yikes2000@yahoo.com>",
   "main": "dist/index.js",
   "files": [
     "dist"
