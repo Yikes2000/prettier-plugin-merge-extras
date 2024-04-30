@@ -5,14 +5,6 @@ import { options } from './options';
 // Export 'preprocess' and 'postprocess' functions that check for handled languages
 const handleParsers = ['babel', 'typescript'];
 
-// function prepocess(parserName: string, code: string, options: ParserOptions): string {
-//     return handleParsers.includes(parserName) ? _preprocess(code, options) : code;
-// }
-
-// function postpocess(parserName: string, code: string, options: ParserOptions): string {
-//     return handleParsers.includes(parserName) ? _postprocess(code, options) : code;
-// }
-
 export const PreserveLine = {
     options,
 

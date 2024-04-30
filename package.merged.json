@@ -1,6 +1,7 @@
 {
   "name": "@yikes2000/prettier-plugin-merge-preserve",
   "version": "0.6.1-alpha.3",
+  "private": true,
   "description": "A Prettier plugin that preserves desired lines while sequentially merges the formatting results of other Prettier plugins.",
   "keywords": [
     "prettier",
@@ -32,7 +33,9 @@
     "prepare-release": "pnpm run build:plain && npm version prerelease --preid=alpha --git-tag-version=false && pnpm run merge-deps && npm pack"
   },
   "dependencies": {
-    "diff": "5.1.0"
+    "core-parts": "workspace:*",
+    "diff": "5.1.0",
+    "prettier": "3.0.3"
   },
   "devDependencies": {
     "@trivago/prettier-plugin-sort-imports": "4.2.1",
