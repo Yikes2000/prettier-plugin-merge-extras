@@ -2,7 +2,7 @@
 
 (Fork of Hyeonjong's [prettier-plugin-merge](https://github.com/ony3000/prettier-plugin-merge).)
 
-A Prettier plugin for preserving lines, in addition to the functionality of 
+A Prettier plugin for preserving lines, in addition to the functionality of
 [prettier-plugin-merge](https://github.com/ony3000/prettier-plugin-merge).
 
 ```
@@ -279,3 +279,7 @@ options won't work, due to the limit of this RegExp approach.  Please kindly rep
 ## Credits
 
 This plugin is a fork of Hyeonjong's [prettier-plugin-merge](https://github.com/ony3000/prettier-plugin-merge).
+
+Development and testing is done separately in
+[@yikes2000/prettier-plugin-preserve-line](https://github.com/yikes2000/prettier-plugin-preserve-line) to simplify
+the integration with `prettier-plugin-merge`.
