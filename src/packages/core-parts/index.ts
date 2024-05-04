@@ -1,5 +1,5 @@
 import * as Diff from 'diff';
-export { PreserveLine } from './preserve-line';
+export { Extras } from './extras';
 export { options } from './options';
 
 enum PairingMode {

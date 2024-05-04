@@ -1,5 +1,12 @@
 import type { ParserOptions, Plugin } from 'prettier';
 
+interface PreserveLineOptions {
+  preserveFirstBlankLine?: boolean;
+  preserveLastBlankLine?: boolean;
+  preserveEolMarker?: boolean;
+  preserveDotChain?: boolean;
+};
+
 /**
  * 'preserve-first-blank-line' is accomplished by replacing the first empty line in an open block with a marker comment
  * in pre-process, e.g.
@@ -98,7 +105,7 @@ const CONCAT_DOTS = new RegExp(
 /**
  * Parser pre-process source code.
  */
-export function preprocess(code: string, options: ParserOptions): string {
+export function preprocess(code: string, options: PreserveLineOptions): string {
   //
   if (options.preserveFirstBlankLine) {
     code = code.replace(OPEN_BLANK_LINE, '$1' + BR + '\n');
@@ -125,7 +132,7 @@ export function preprocess(code: string, options: ParserOptions): string {
 /**
  * Parser post-process source code.
  */
-export function postprocess(code: string, options: ParserOptions): string {
+export function postprocess(code: string, options: PreserveLineOptions): string {
   //
   if (options.preserveFirstBlankLine || options.preserveLastBlankLine) {
     code = code.replace(BR_LINE, '');

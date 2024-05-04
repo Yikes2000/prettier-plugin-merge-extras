@@ -1,6 +1,4 @@
 import type { SupportOptions } from 'prettier';
-import { PreserveLine } from './preserve-line';
+import { Extras } from './extras';
 
-export const options: SupportOptions = {
-    ...PreserveLine.options
-};
+export const options: SupportOptions = Extras.options;

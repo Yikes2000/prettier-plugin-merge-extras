@@ -1,5 +1,5 @@
 import type { SubstitutePatch } from 'core-parts';
-import { makePatches, applyPatches, PreserveLine } from 'core-parts';
+import { makePatches, applyPatches, Extras } from 'core-parts';
 import type { Parser, ParserOptions, Plugin } from 'prettier';
 import { format } from 'prettier';
 import { parsers as babelParsers } from 'prettier/plugins/babel';
@@ -96,25 +96,26 @@ function transformParser(
         }
       }
 
-      text = PreserveLine.preprocess(parserName, text, options);
+      const optionsExtras = { ...options, parserName };
+      let code: string = Extras.preprocess(text, optionsExtras);
 
       const parserImplementedPlugins = plugins
         .slice(0, pluginIndex)
         .filter((plugin) => plugin.parsers?.[parserName]);
-      let result = await sequentialFormattingAndTryMerging(
+      code = await sequentialFormattingAndTryMerging(
         {
           ...options,
-          originalText: text,
+          originalText: code,
         },
         parserImplementedPlugins,
         languageImplementedPlugin,
       );
 
-      result = PreserveLine.postprocess(parserName, result, options);
+      code = Extras.postprocess(code, optionsExtras);
 
       return {
         type: 'FormattedText',
-        body: result,
+        body: code,
       };
     },
     astFormat: 'merging-ast',

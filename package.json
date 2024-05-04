@@ -1,7 +1,7 @@
 {
-  "name": "@yikes2000/prettier-plugin-merge-preserve",
+  "name": "@yikes2000/prettier-plugin-merge-extras",
   "version": "0.6.1-alpha.3",
-  "description": "A Prettier plugin that preserves desired lines while sequentially merges the formatting results of other Prettier plugins.",
+  "description": "A prettier plugin for extra options -- a fork of prettier-plugin-merge by necessity.",
   "keywords": [
     "prettier",
     "plugin",
@@ -10,11 +10,14 @@
     "formatting",
     "multiple",
     "preserve",
-    "line"
+    "line",
+    "align",
+    "object",
+    "properties"
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/yikes2000/prettier-plugin-merge-preserve.git"
+    "url": "git+https://github.com/yikes2000/prettier-plugin-merge-extras.git"
   },
   "license": "MIT",
   "author": "Andy Lee <yikes2000@yahoo.com>",
