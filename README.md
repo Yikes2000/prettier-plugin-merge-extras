@@ -84,115 +84,6 @@ export default {
 
 ## Options
 
-### Preserve First Blank Line
-
-Preserve the first blank line of a block (curly, bracket, or parenthesis), e.g.
-```
-  if (condition) {
-
-    statement1;
-    statement2;
-  }
-
-  a = [
-
-    // Odds
-    1, 3, 5, 7, 9,
-  ];
-
-  sum = (
-
-    1 + 3 + 5 + 7 + 9
-  );
-```
-<!-- prettier-ignore -->
-Default | CLI&nbsp;Override | API&nbsp;Override
---- | --- | ---
-`true` | `--no-preserve-first-blank-line` | `preserveFirstBlankLine: <bool>`
-
-
-### Preserve Last Blank Line
-
-Preserve the last blank line of a block (curly, bracket, or parenthesis), e.g.
-```
-  if (condition) {
-    statement1;
-    statement2;
-
-  }
-```
-<!-- prettier-ignore -->
-Default | CLI&nbsp;Override | API&nbsp;Override
---- | --- | ---
-`true` | `--no-preserve-last-blank-line` | `preserveLastBlankLine: <bool>`
-
-
-### Preserve by EOL Marker
-
-End-of-line "//" marker applies "// prettier-ignore" to that line, e.g.
-```
-  matrix = [  //
-    1, 0, 1,
-    0, 1, 0,
-    0, 0, 1,
-  ];
-
-  msg =  //
-      matrix.length < 9 ? 'too smalt'
-    : matrix.length > 9 ? 'too big'
-    :                     'just right';
-```
-<!-- prettier-ignore -->
-Default | CLI&nbsp;Override | API&nbsp;Override
---- | --- | ---
-`true` | `--no-preserve-eol-marker` | `preserveEolMarker: <bool>`
-
-
-### Preserve Method Chain Breaks
-
-Preserve existing method chain breaks:
-```
-  cy.get("something")
-    .value().matches('abc').matches('cde')
-    .allowing({
-        name: "explanation",
-        xyz: true
-    }).andMore()
-    .done();
-```
-(Indentation is still handled by Prettier.)
-
-Otherwise Prettier formats method chain in one of two styles:
-```
-  cy.all().in().one().line();
-
-  cy.tooManyForOneLine()
-    .split()
-    .them()
-    .into()
-    .multiple()
-    .lines();
-```
-
-Add "// no-preserve" to revert to Prettier format:
-```
-  // no-preserve
-  cy.get("something").old().style();
-
-  // no-preserve
-  cy.get("something")
-    .tooManyForOneLine()
-    .one()
-    .two()
-    .three();
-```
-
-<!-- prettier-ignore -->
-Default | CLI&nbsp;Override | API&nbsp;Override
---- | --- | ---
-`true` | `--no-preserve-dot-chain` | `preserveDotChain: <bool>`
-
-
 ### Align Object Properties
 
 Align properties of object literals.
@@ -245,6 +136,141 @@ Single property is not aligned by default.
 Default | CLI&nbsp;Override | API&nbsp;Override
 --- | --- | ---
 `false` | `--align-single-property` | `alignSingleProperty: <boolean>`
+
+
+### Merge Imports
+
+Merge simple imports:
+```
+  import { a, b } from 'foo';
+  import { c } from 'foo';
+  import { d } from 'foo';
+  import { eee } from 'bar';
+
+Merged:
+  import { a, b, c, d } from 'foo';
+  import { eee } from 'bar';
+```
+Currently a missing functionality of `@trivago/prettier-plugin-sort-imports`.
+
+<!-- prettier-ignore -->
+Default | CLI&nbsp;Override | API&nbsp;Override
+--- | --- | ---
+`true` | `--no-merge-simple-imports` | `mergeSimpleImports: <bool>`
+
+
+### Preserve Method Chain Breaks
+
+Preserve existing method chain breaks:
+```
+  cy.get("something")
+    .value().matches('abc').matches('cde')
+    .allowing({
+        name: "explanation",
+        xyz: true
+    }).andMore()
+    .done();
+```
+(Indentation is still handled by Prettier.)
+
+Otherwise Prettier formats method chain in one of two styles:
+```
+  cy.all().in().one().line();
+
+  cy.tooManyForOneLine()
+    .split()
+    .them()
+    .into()
+    .multiple()
+    .lines();
+```
+
+Add "// no-preserve" to revert to Prettier format:
+```
+  // no-preserve
+  cy.get("something").old().style();
+
+  // no-preserve
+  cy.get("something")
+    .tooManyForOneLine()
+    .one()
+    .two()
+    .three();
+```
+
+<!-- prettier-ignore -->
+Default | CLI&nbsp;Override | API&nbsp;Override
+--- | --- | ---
+`true` | `--no-preserve-dot-chain` | `preserveDotChain: <bool>`
+
+
+### Preserve by EOL Marker
+
+End-of-line "//" marker applies "// prettier-ignore" to that line, e.g.
+```
+  matrix = [  //
+    1, 0, 1,
+    0, 1, 0,
+    0, 0, 1,
+  ];
+
+  msg =  //
+      matrix.length < 9 ? 'too smalt'
+    : matrix.length > 9 ? 'too big'
+    :                     'just right';
+```
+<!-- prettier-ignore -->
+Default | CLI&nbsp;Override | API&nbsp;Override
+--- | --- | ---
+`true` | `--no-preserve-eol-marker` | `preserveEolMarker: <bool>`
+
+
+
+### Preserve First Blank Line
+
+Preserve the first blank line of a block (curly, bracket, or parenthesis), e.g.
+```
+  if (condition) {
+
+    statement1;
+    statement2;
+  }
+
+  a = [
+
+    // Odds
+    1, 3, 5, 7, 9,
+  ];
+
+  sum = (
+
+    1 + 3 + 5 + 7 + 9
+  );
+```
+<!-- prettier-ignore -->
+Default | CLI&nbsp;Override | API&nbsp;Override
+--- | --- | ---
+`true` | `--no-preserve-first-blank-line` | `preserveFirstBlankLine: <bool>`
+
+
+### Preserve Last Blank Line
+
+Preserve the last blank line of a block (curly, bracket, or parenthesis), e.g.
+```
+  if (condition) {
+    statement1;
+    statement2;
+
+  }
+```
+<!-- prettier-ignore -->
+Default | CLI&nbsp;Override | API&nbsp;Override
+--- | --- | ---
+`true` | `--no-preserve-last-blank-line` | `preserveLastBlankLine: <bool>`
+
+
+
+
 
 
 ## Compatibility with other Prettier plugins

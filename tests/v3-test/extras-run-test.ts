@@ -15,15 +15,24 @@ export type Params = {
     desc: string;
     parser: string;
     fixtures: Fixture[];
+    options?: any;
 };
+
+export function runTestAlign(params: Params) {
+  // Run align-obj-props tests with default alignObjectProperties set to 'colon'
+  runTest({ ...params, options: { alignObjectProperties: 'colon' } });
+}
 
 export function runTest(params: Params) {
     //
     const options = {
         ...baseOptions,
-        tabWidth: 4,
         plugins: [thisPlugin],
         parser: params.parser,
+
+        tabWidth: 4,
+        alignObjectProperties: 'none',
+        ...(params.options ?? {}),
     };
 
     describe(params.desc, () => {

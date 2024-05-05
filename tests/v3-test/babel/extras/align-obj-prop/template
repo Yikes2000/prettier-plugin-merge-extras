@@ -1,0 +1,25 @@
+import { Fixture, runTestAlign } from '../../../extras-run-test';
+import { parser } from '../parser';
+
+const desc = '--align-object-properties';
+const name = '';
+
+const fixtures: Fixture[] = [
+    {
+        name: `${name} (1) n/a`,
+        input: `\
+//---------------------------------------- (1)
+`,
+        output: `\
+//---------------------------------------- (1)
+`
+    },
+    {
+        name: `${name} (2) basic`,
+        input: `\
+//---------------------------------------- (2)
+`,
+    },
+];
+
+runTestAlign({ desc, parser, fixtures });
