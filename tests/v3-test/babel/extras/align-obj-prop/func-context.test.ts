@@ -191,6 +191,59 @@ function a() {
 }
 `
     },
+    {
+        name: `${name} (5) deep return-else corner case`,
+        input: `\
+//---------------------------------------- (5)
+a = {
+    first: {
+        desc: "1st", // force multi-line
+        fn: () => {
+            if (cond) {
+                return [
+                    fake,
+                    {
+                        deep: true, // force multi-line
+                        n: 12,
+                    },
+                ];
+            } else {
+                return {};
+            }
+        },
+    },
+    second: {
+        desc: "2nd", // force multi-line
+        bar: true,
+    },
+};
+`,
+        output: `\
+//---------------------------------------- (5)
+a = {
+    first : {
+        desc : "1st", // force multi-line
+        fn   : () => {
+            if (cond) {
+                return [
+                    fake,
+                    {
+                        deep : true, // force multi-line
+                        n    : 12,
+                    },
+                ];
+            } else {
+                return {};
+            }
+        },
+    },
+    second : {
+        desc : "2nd", // force multi-line
+        bar  : true,
+    },
+};
+`
+    },
 ];
 
 runTestAlign({ desc, parser, fixtures });

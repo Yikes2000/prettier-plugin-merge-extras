@@ -221,7 +221,10 @@ function splitByCurly(code: string): any[] {
             && prev.lastLine.indent <= next.firstLine.indent;
 
         // Previous segment first line indentation must be less or equal to the last line's indent
-        const prevSegInvalidIndent = prev.firstLine.indent > prev.lastLine.indent;
+        const prevSegInvalidIndent =
+
+            prev.firstLine.indent > prev.lastLine.indent
+            && !prev.lastLine.text.match(/^\s*[\)\}\]\>]/);
 
         const mergeToPrev = openCloseBadIndent || openNotIncreaseIndent || closeNotReduceIndent
             || prevSegInvalidIndent;
