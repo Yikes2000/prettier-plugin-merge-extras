@@ -125,7 +125,7 @@ function makeSegment(lines: string) {
         return {
             lines,
             firstLine: { indent: 9999 },
-            listLine: { text: lines, indent: 9999 },
+            lastLine: { text: lines, indent: 9999 },
         };
     }
 

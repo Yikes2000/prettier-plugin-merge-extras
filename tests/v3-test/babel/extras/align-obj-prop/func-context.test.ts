@@ -244,6 +244,25 @@ a = {
 };
 `
     },
+    {
+        name: `${name} (6) empty class`,
+        input: `\
+//---------------------------------------- (6)
+import { a } from "foo";
+
+export class Bar {
+
+}
+`,
+        output: `\
+//---------------------------------------- (6)
+import { a } from "foo";
+
+export class Bar {
+
+}
+`
+    },
 ];
 
 runTestAlign({ desc, parser, fixtures });
