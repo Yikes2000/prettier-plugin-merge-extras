@@ -17,7 +17,9 @@ const a = {
     ee: "extra",
 
     f: false,
-    // inline comment continues group
+    // group continuation with inline comment, spread, and property name shorthand
+    ...spread,
+    job,
     good: true,
 
     hi: "hi",
@@ -36,7 +38,9 @@ const a = {
     ee  : "extra",
 
     f    : false,
-    // inline comment continues group
+    // group continuation with inline comment, spread, and property name shorthand
+    ...spread,
+    job,
     good : true,
 
     hi : "hi",

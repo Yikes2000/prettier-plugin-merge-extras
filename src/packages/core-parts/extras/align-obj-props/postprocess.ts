@@ -267,9 +267,15 @@ function alignObjectPropLevel(segs: any[], idx: number[], indent: number) {
         }
     }
 
-    // Property key 'key:', '[key]:', '"key":', or "'key':"
+    // Group property key 'key:', '[key]:', '"key":', or "'key':"
     const RE_PROPERTY = getRegExpProperty(indent);
+
+    // Group continuation with inline comment, spread, and property name shorthand
     const RE_COMMENT = new RegExp(`^[ ]{${indent}}//`);
+    const RE_SPREAD_OR_PROP_SHORTHAND = new RegExp(`^[ ]{${indent}}(?:\\.\\.\\.)?\\w+,`);
+
+    const isGroupContinuation = (line) => RE_PROPERTY.test(line) || RE_COMMENT.test(line)
+            || RE_SPREAD_OR_PROP_SHORTHAND.test(line);
 
     let change = { count: 0 };
 
@@ -282,20 +288,20 @@ function alignObjectPropLevel(segs: any[], idx: number[], indent: number) {
         const firstLine = lines.shift();
         let lastChunk = [firstLine];
         let chunks: any[] = [lastChunk];
-        let isPrevPropOrComment = RE_COMMENT.test(firstLine) || RE_PROPERTY.test(firstLine);
+        let isPrevChunkContinuing = isGroupContinuation(firstLine);
 
-        // Each chunk is consecutive lines of property key and comment, followed by others
+        // Each chunk is consecutive lines of property key, comment, spread, or property shorthand, followed by other lines
         while (lines.length) {
             const line = lines.shift();
-            const isLinePropOrComment = RE_COMMENT.test(line) || RE_PROPERTY.test(line);
+            const isLineContinuingGroup = isGroupContinuation(line);
 
-            // Start a new chunk when last chunk ends with 'other' and the current line is property key or comment
-            if (!isPrevPropOrComment && isLinePropOrComment) {
+            // Start a new chunk when last chunk ends with 'other' line and the current line is a group-continuation line
+            if (!isPrevChunkContinuing && isLineContinuingGroup) {
                 chunks.push(lastChunk = []);
             }
 
             lastChunk.push(line);
-            isPrevPropOrComment = isLinePropOrComment;
+            isPrevChunkContinuing = isLineContinuingGroup;
         }
 
         // Align each chunk, then reconstitute into strings
