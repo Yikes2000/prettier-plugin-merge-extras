@@ -57,7 +57,7 @@ async function sequentialFormattingAndTryMerging(
 }
 
 function transformParser(
-  parserName: 'babel' | 'typescript' | 'vue' | 'astro',
+  parserName: 'babel' | 'typescript' | 'vue' | 'astro' | 'angular',
   defaultParser: Parser,
   languageName?: string,
 ): Parser {
@@ -127,4 +127,5 @@ export const parsers: { [parserName: string]: Parser } = {
   typescript: transformParser('typescript', typescriptParsers.typescript),
   vue: transformParser('vue', htmlParsers.vue),
   astro: transformParser('astro', {} as Parser, 'astro'),
+  angular: transformParser('angular', htmlParsers.angular),
 };

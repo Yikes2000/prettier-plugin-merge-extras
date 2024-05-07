@@ -39,7 +39,7 @@ const a = {
 `
     },
     {
-        name: `${name} (2) corner fail`,
+        name: `${name} (2) corner EOL fail`,
         input: `\
 //---------------------------------------- (2)
 const a = {
@@ -61,6 +61,47 @@ const a = {
 };
 `
     },
+    {
+      name: `${name} (3) corner mid-line fail`,
+      input: `\
+//---------------------------------------- (3)
+const a = [
+    { label: "foo", code: "abc" },
+    {
+        label: "bar",
+        code: \`
+one line\`,
+    },
+    { label: "bat", code: "def" },
+    {
+        label: "moo",
+        code: \`
+multi-line
+\`,
+    },
+    { label: "cat", code: "ghi" },
+];
+`,
+      output: `\
+//---------------------------------------- (3)
+const a = [
+    { label: "foo", code: "abc" },
+    {
+        label : "bar",
+        code  : \`
+one line\`,
+    },
+    { label: "bat", code: "def" },
+    {
+        label : "moo",
+        code  : \`
+multi-line
+\`,
+    },
+    { label: "cat", code: "ghi" },
+];
+`
+  },
 ];
 
 runTestAlign({ desc, parser, fixtures });

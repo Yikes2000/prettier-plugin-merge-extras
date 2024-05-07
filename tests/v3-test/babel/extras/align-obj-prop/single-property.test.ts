@@ -6,7 +6,7 @@ const name = 'single property';
 
 const fixtures: Fixture[] = [
     {
-        name: `${name} (1) default false`,
+        name: `${name} (1) default true`,
         input: `\
 //---------------------------------------- (1)
 a = {
@@ -21,7 +21,7 @@ c = {
         output: `\
 //---------------------------------------- (1)
 a = {
-    b: true,
+    b : true,
 };
 
 c = {
@@ -31,8 +31,8 @@ c = {
 `
     },
     {
-        name: `${name} (2) true`,
-        options: { alignSingleProperty: true },
+        name: `${name} (2) false`,
+        options: { alignSingleProperty: false },
         input: `\
 //---------------------------------------- (2)
 a = {
@@ -47,7 +47,7 @@ c = {
         output: `\
 //---------------------------------------- (2)
 a = {
-    b : true,
+    b: true,
 };
 
 c = {

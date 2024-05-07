@@ -82,7 +82,7 @@ function alignObjectProperties(code: string, options: any): string {
 /**
  * RegExp to split code by open/close curly brace into segments of lines:
  *   - '{' at the end of segment
- *   - '}' at the start of segment
+ *   - '}' at the start of segment, also ')' or ']' because they un-indent
  *
  * Split after open curly at the end-of-line:
  *
@@ -93,13 +93,15 @@ function alignObjectProperties(code: string, options: any): string {
  * Split prior to close curly at the beginning-of-line:
  *
  *     >
- *           <=== RE: (?<=\n)(?=[ \t]*\})
+ *           <=== RE: (?<=\n)(?=[ \t]*[\}\)\]])
  *     >    }
  */
-const RE_CURLY_BRACE_SEGMENTATION = new RegExp(/(?<=\{(?:[ \t]*\/\/(?:[^\n]*\/\/)?)?\n)|(?<=\n)(?=[ \t]*\})/s);
+const RE_CURLY_BRACE_SEGMENTATION =
+  new RegExp(/(?<=\{(?:[ \t]*\/\/(?:[^\n]*\/\/)?)?\n)|(?<=\n)(?=[ \t]*[\}\)\]])/s);
 
-// Test if a segment starts with close brace '}'
-const RE_START_IS_OPEN_CURLY = new RegExp(/^[ \t]*\}/);
+// Test if a segment starts with close brace '}', or close symbol ('}', ')', or ']')
+const RE_START_IS_CLOSE_CURLY = new RegExp(/^[ \t]*\}/);
+const RE_START_IS_CLOSE_SYMBOL =new RegExp(/^[ \t]*[\}\)\]]/);
 
 // Test if a segment ends with open brace '{', plus optional '//' or '// ... //'
 const RE_END_IS_OPEN_CURLY = new RegExp(/\{(?:[ \t]*\/\/(?:[^\n]*\/\/)?)?\n[ \t\n]*$/);
@@ -108,8 +110,8 @@ const RE_END_IS_OPEN_CURLY = new RegExp(/\{(?:[ \t]*\/\/(?:[^\n]*\/\/)?)?\n[ \t\
 const RE_END_IS_PRETTIER_IGNORE = new RegExp(/\{(?:[ \t]*\/\/(?:[^\n]*\/\/)?)\n[ \t\n]*$/);
 
 // Detect open brace from function declaration, e.g. ') {' or '=> {', and exceptions
-const RE_END_IS_FUNC_OPEN_BRACE = new RegExp(/[\w\)]\s*\{[ \t\n]*$/);
-const RE_END_IS_OBJ_OPEN_BRACE = new RegExp(/\b(?:return|throw)\s*\{[^\n]*[ \t\n]*$/i);
+const RE_END_IS_FUNC_OPEN_BRACE = new RegExp(/[\w\)\>]\s+\{[ \t\n]*$/);
+const RE_END_IS_OBJ_OPEN_BRACE = new RegExp(/\b(?:return|throw)\s+\{[^\n]*[ \t\n]*$/i);
 
 // Indentation count (of spaces)
 function getIndent(line: string) {
@@ -142,7 +144,8 @@ function makeSegment(lines: string) {
         firstLine : { text: firstLine, indent: getIndent(firstLine) },
         lastLine  : { text: lastLine,  indent: getIndent(lastLine) },
 
-        startIsCloseCurly  : RE_START_IS_OPEN_CURLY.test(firstLine),
+        startIsCloseCurly  : RE_START_IS_CLOSE_CURLY.test(firstLine),
+        startIsCloseSymbol : RE_START_IS_CLOSE_SYMBOL.test(firstLine),
         endIsOpenCurly     : RE_END_IS_OPEN_CURLY.test(lastLine),
         endIsIgnore        : RE_END_IS_PRETTIER_IGNORE.test(lastLine),
 
@@ -196,10 +199,10 @@ function splitByCurly(code: string): any[] {
         .map((lines) => makeSegment(lines));
 
     // Combine segments when indentation is wrong
-    const seg = [ rawSegs.shift() ];
+    const segs = [ rawSegs.shift() ];
     while (rawSegs.length) {
 
-        const prev = seg[seg.length - 1];
+        const prev = segs[segs.length - 1];
         const next = rawSegs.shift();
 
         // Open '{' followed by close '}' curly line must have same indent
@@ -214,30 +217,30 @@ function splitByCurly(code: string): any[] {
             prev.endIsOpenCurly && !next.startIsCloseCurly
             && prev.lastLine.indent >= next.firstLine.indent;
 
-        // Close curly must reduce indent from previous segment
+        // Close symbol (curly, bracket, or parenthesis) must reduce indent from previous segment
         const closeNotReduceIndent =
 
-            !prev.endIsOpenCurly && next.startIsCloseCurly
-            && prev.lastLine.indent <= next.firstLine.indent;
+            next.startIsCloseSymbol
+            && prev.firstLine.indent <= next.firstLine.indent;
 
         // Previous segment first line indentation must be less or equal to the last line's indent
         const prevSegInvalidIndent =
 
             prev.firstLine.indent > prev.lastLine.indent
-            && !prev.lastLine.text.match(/^\s*[\)\}\]\>]/);
+            && !prev.lastLine.text.match(/(?:^\s*[\)\}\]\>\:]|\`,?)/);
 
         const mergeToPrev = openCloseBadIndent || openNotIncreaseIndent || closeNotReduceIndent
             || prevSegInvalidIndent;
 
         if (mergeToPrev) {
-            seg[seg.length - 1] = makeSegment(prev.lines + next.lines);
+            segs[segs.length - 1] = makeSegment(prev.lines + next.lines);
         }
         else {
-            seg.push(next);
+            segs.push(next);
         }
     }
 
-    return seg;
+    return segs;
 }
 
 //---------------------------------------------------------------------------------------------------- @ignore

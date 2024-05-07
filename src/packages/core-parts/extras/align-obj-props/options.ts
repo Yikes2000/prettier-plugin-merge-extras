@@ -10,7 +10,7 @@ export const options: SupportOptions = {
   alignSingleProperty: {
     category: 'Format',
     type: "boolean",
-    default: false,
+    default: true,
     description: "Add space around colon even for objects of single property.",
   }
 };

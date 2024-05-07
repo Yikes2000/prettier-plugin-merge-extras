@@ -3,7 +3,15 @@
 A prettier plugin for less-opinionated options -- a fork of [prettier-plugin-merge](https://github.com/ony3000/prettier-plugin-merge) by necessity.
 
 ```
-    Preserve first or last blank line of a block:     An expression:
+    Align properties of object literals:
+
+        a = {
+            id   : 1,
+            name : 'alpha'
+            foo  : true,
+        }
+
+    Preserve first or last blank line of a block:
 
         if (condition) {
 
@@ -29,14 +37,6 @@ A prettier plugin for less-opinionated options -- a fork of [prettier-plugin-mer
               xyz: true
           })
           .done();
-
-    Align properties of object literals:
-
-        a = {
-            id   : 1,
-            name : 'alpha'
-            foo  : true,
-        }
 ```
 
 
@@ -125,17 +125,19 @@ Default | CLI&nbsp;Override | API&nbsp;Override
 
 ### Align Single Property
 
-Single property is not aligned by default.
+Determine if single property has added white space padding:
 ```
   const a = {
     // force multi-line
-    bar: true,
+    bar : true,
   }
 ```
+Only applicable when `alignObjectProperties: "colon"`.
+
 <!-- prettier-ignore -->
 Default | CLI&nbsp;Override | API&nbsp;Override
 --- | --- | ---
-`false` | `--align-single-property` | `alignSingleProperty: <boolean>`
+`true` | `--align-single-property` | `alignSingleProperty: <boolean>`
 
 
 ### Merge Imports
@@ -307,8 +309,9 @@ module.exports = {
 <!-- prettier-ignore -->
 Language | Supported
 --- | ---
-Javascript | Yes
-Typescript | Yes
+Javascript | Yes, all options
+Typescript | Yes, all options
+Angular    | alignObjectProperties, alignSingleProperty
 
 Welcome contributors to support additional languages.
 
