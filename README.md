@@ -117,6 +117,8 @@ Alignment options: 'colon' (default), 'value', 'none'
         height : 20,                 height: 20,
     };                           };
 ```
+See `preserveEolMarker` option about aligning '=' symbol for assignments.
+
 <!-- prettier-ignore -->
 Default | CLI&nbsp;Override | API&nbsp;Override
 --- | --- | ---
@@ -220,6 +222,26 @@ End-of-line "//" marker applies "// prettier-ignore" to that line, e.g.
       matrix.length < 9 ? 'too smalt'
     : matrix.length > 9 ? 'too big'
     :                     'just right';
+```
+End-of-line "//=" marker aligns consecutive assignment lines:
+```
+  a   = true; //=
+  bbb = 1;
+  cc  = "ok";
+
+  d = 4;
+```
+End-of-line "///" (triple slash) marker aligns '//' inline comments in consecutive lines:
+```
+  statement;  // step one ///
+  a = 1;      // two
+  cc = "ok";  // three
+```
+End-of-line "///=" does both:
+```
+  a   = true;  // one ///=
+  bbb = 1;     // two
+  cc  = "ok";  // three
 ```
 <!-- prettier-ignore -->
 Default | CLI&nbsp;Override | API&nbsp;Override

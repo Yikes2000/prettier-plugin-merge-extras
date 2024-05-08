@@ -36,6 +36,47 @@ if (success) {
 }
 `,
     },
+    {
+        name: `${name} (2) causes abnormal indent`,
+        input: `\
+//---------------------------------------- (2)
+const a =
+    ( cond1 || cond2 )
+        ? {
+              expression: "abc", // force multi-line
+              id: 1,
+          }
+        : {
+              // force multi-line
+              id: 2,
+          };
+
+foo(true, {
+    ...something, // force multi-line
+    temporary: true,
+    refresh: true
+});
+`,
+        output: `\
+//---------------------------------------- (2)
+const a =
+    cond1 || cond2
+        ? {
+              expression : "abc", // force multi-line
+              id         : 1,
+          }
+        : {
+              // force multi-line
+              id : 2,
+          };
+
+foo(true, {
+    ...something, // force multi-line
+    temporary : true,
+    refresh   : true,
+});
+`,
+    },
 ];
 
 runTestAlign({ desc, parser, fixtures });

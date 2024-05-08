@@ -53,7 +53,7 @@ function alignObjectProperties(code: string, options: any): string {
             .filter((indentLvl) => indentLvl > indent)
             .forEach((indentLvl) => {
 
-                if (ignoreAboveLvl < 0 || indentLvl <= ignoreAboveLvl) {
+                if (ignoreAboveLvl == -1 || indentLvl <= ignoreAboveLvl) {
                     alignObjectPropLevel(segs, group[indentLvl], indentLvl);
                 }
                 delete group[indentLvl];
@@ -64,7 +64,7 @@ function alignObjectProperties(code: string, options: any): string {
         group[indent].push(i);
 
         // Handle EOL '//' as alias for applying '// prettier-ignore' to the line
-        if (ignoreAboveLvl >= 0) {
+        if (ignoreAboveLvl > -1) {
             if (indent <= ignoreAboveLvl) {
                 ignoreAboveLvl = -1;
             }
@@ -107,11 +107,11 @@ const RE_START_IS_CLOSE_SYMBOL =new RegExp(/^[ \t]*[\}\)\]]/);
 const RE_END_IS_OPEN_CURLY = new RegExp(/\{(?:[ \t]*\/\/(?:[^\n]*\/\/)?)?\n[ \t\n]*$/);
 
 // Detect if a segment ends with open curly but EOL '//', indicating prettier-ignore
-const RE_END_IS_PRETTIER_IGNORE = new RegExp(/\{(?:[ \t]*\/\/(?:[^\n]*\/\/)?)\n[ \t\n]*$/);
+const RE_END_IS_EOL_IGNORE = new RegExp(/\{(?:[ \t]*\/\/(?:[^\n]*\/\/)?)\n[ \t\n]*$/);
 
 // Detect open brace from function declaration, e.g. ') {' or '=> {', and exceptions
 const RE_END_IS_FUNC_OPEN_BRACE = new RegExp(/[\w\)\>]\s+\{[ \t\n]*$/);
-const RE_END_IS_OBJ_OPEN_BRACE = new RegExp(/\b(?:return|throw)\s+\{[^\n]*[ \t\n]*$/i);
+const RE_END_IS_OBJ_OPEN_BRACE = new RegExp(/\b(?:return|throw|interface \w+)\s+\{[^\n]*[ \t\n]*$/i);
 
 // Indentation count (of spaces)
 function getIndent(line: string) {
@@ -147,7 +147,7 @@ function makeSegment(lines: string) {
         startIsCloseCurly  : RE_START_IS_CLOSE_CURLY.test(firstLine),
         startIsCloseSymbol : RE_START_IS_CLOSE_SYMBOL.test(firstLine),
         endIsOpenCurly     : RE_END_IS_OPEN_CURLY.test(lastLine),
-        endIsIgnore        : RE_END_IS_PRETTIER_IGNORE.test(lastLine),
+        beginIgnore        : RE_END_IS_EOL_IGNORE.test(lastLine),
 
         endIsFuncOpenCurly : RE_END_IS_FUNC_OPEN_BRACE.test(linesNoComment)
             && !RE_END_IS_OBJ_OPEN_BRACE.test(linesNoComment),
@@ -227,7 +227,7 @@ function splitByCurly(code: string): any[] {
         const prevSegInvalidIndent =
 
             prev.firstLine.indent > prev.lastLine.indent
-            && !prev.lastLine.text.match(/(?:^\s*[\)\}\]\>\:]|\`,?)/);
+            && !(prev.lastLine.text.match(/(?:^\s*[\)\}\]\>\:]|\`,?)/) || prev.endIsOpenCurly);
 
         const mergeToPrev = openCloseBadIndent || openNotIncreaseIndent || closeNotReduceIndent
             || prevSegInvalidIndent;
@@ -322,10 +322,10 @@ function alignObjectPropLevel(segs: any[], idx: number[], indent: number) {
 }
 
 /**
- * RegExp for property key 'key:', '[key]:', '"key":', or "'key':".
+ * RegExp for property key 'key:', '[key]:', '"key":', "'key':", '#key:', 'key$:', etc
  */
 function getRegExpProperty(indent: number) {
-    return new RegExp(`^[ ]{${indent}}(\\w+|\\[[\\w\\.]+\\]|(['"])[^\\1\\n]+\\1):`);
+    return new RegExp(`^[ ]{${indent}}([^ :]+|(['"])[^\\1\\n]+\\1):`);
 }
 
 /**
