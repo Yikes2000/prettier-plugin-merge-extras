@@ -17,10 +17,10 @@ interface PreserveLineOptions {
  *
  * Then the code is formatted by Prettier, after which the marker is removed in post-process.
  */
-const RE_OPEN_BLANK_LINE = new RegExp(/([\{\[\(\=\:\|\&]\s*\n)(?:\s*\n)+/g);
+const RE_OPEN_BLANK_LINE = new RegExp(/([\{\[\(=:|&]\s*\n)(?:\s*\n)+/g);
 
 const BR = '//__BR__';
-const RE_BR_LINE = new RegExp(`^\\s*${BR}$`, 'mg');  // for post-process
+const RE_BR_LINE = new RegExp(`[ ]*${BR}$`, 'mg');  // for post-process
 
 /**
  * 'preserve-last-blank-line' replaces the last empty line a close block with a marker comment in pre-process, e.g.
@@ -32,7 +32,7 @@ const RE_BR_LINE = new RegExp(`^\\s*${BR}$`, 'mg');  // for post-process
  *
  * After Prettier formats the code, then the marker is removed in post-process.
  */
-const RE_CLOSE_BLANK_LINE = new RegExp(/(?<=\n)(?:\s*\n)+(\s*[\}\]\)\?\:])/g);
+const RE_CLOSE_BLANK_LINE = new RegExp(/(?<=\n)(?:\s*\n)+(\s*[\}\]\)])/g);
 
 /**
  * End-of-line '//' alias for '// prettier-ignore' on the previous line is added during pre-process, e.g.
@@ -155,6 +155,7 @@ export function postprocess(code: string, options: PreserveLineOptions): string 
     code = code.replace(RE_DBL_SLASH_IGNORE, '');
     code = code.replace(RE_DBL_RESTORE_SPACE, ' $1');
     code = alignEqual(code);
+    code = alignColon(code, options);
     code = alignTripleSlash(code);
   }
   return code;
@@ -169,8 +170,8 @@ export function postprocess(code: string, options: PreserveLineOptions): string 
  *      foo = "bar";
  */
 const RE_DBL_SLASH_EQUAL = new RegExp(/\/\/=\n/);
-const RE_ASSIGN_SEGMENTS = new RegExp(/(?<=(?:^|\n)[^=\n]*\n)(?=\s*\S+\s*[?&|*/+-]*=\s*\S)/);
-const RE_ASSIGN_LINE = new RegExp(/^(\s*)(\S+)\s*([?&|*/+-]*=\s*\S)/);
+const RE_ASSIGN_SEGMENTS = new RegExp(/(?<=(?:^|\n)[^=\n]*\n)(?=\s*\S.* [?&|*/+-]*=\s*\S)/);
+const RE_ASSIGN_LINE = new RegExp(/^(\s*)(\S.*) ([?&|*/+-]*=\s*\S)/);
 
 /**
  * Align the equal sign starting at lines with EOL '//=', for consecutive assignment lines.
@@ -259,7 +260,7 @@ function _alignEqualLines(lines: string[]): string[] {
 
 //---------------------------------------------------------------------------------------------------- @ignore
 
-const RE_TRI_SLASH_SEGS = new RegExp(/(?<=\n|^)(?=[^\n]*\/\/\/=?\n)/);
+const RE_TRI_SLASH_SEGS = new RegExp(/(?<=\n|^)(?=[^\n]*\/\/\/[=:]?\n)/);
 const RE_DBL_SLASH_LINE = new RegExp(/^(?:(.*?)\s+|)\/\//);
 
 /**
@@ -295,19 +296,100 @@ function _alignDblSlashLines(seg: string): string {
   const lines = seg.split(/(?<=\n)/);
   let alignLines = [];
 
-  while (lines.length && RE_DBL_SLASH_LINE.test(lines[0])) {
+  while (lines.length && lines[0].match(/\S/)) {
     alignLines.push(lines.shift());
   }
 
   // Maximum length of code prior to '//'
   // @ts-ignore
-  const maxLen = alignLines.map((line) => (line.match(RE_DBL_SLASH_LINE)[1] || '').length)
-    .sort((a, b) => b - a)[0];
+  const maxLen = alignLines.map((line = '') => {
+    const match = line.match(RE_DBL_SLASH_LINE) || [];
+    return match[1] ? match[1].length : 0;
+  }).sort((a, b) => b - a)[0];
 
+  // Align '//'
   alignLines = alignLines.map ((line = '') => {
-  // @ts-ignore
-  const len = (line.match(RE_DBL_SLASH_LINE)[1] || '').length;
+    // @ts-ignore
+    const match = line.match(RE_DBL_SLASH_LINE) || [];
+    const len = match[1] ? match[1].length : 0;
     return line.replace(RE_DBL_SLASH_LINE, '$1' + ' '.repeat(maxLen - len) + '  //');
+  });
+
+  return ''.concat(...alignLines, ...lines);
+}
+
+//---------------------------------------------------------------------------------------------------- @ignore
+
+/**
+ * End-of-line '//:' will align equal sign for the consecutive lines:
+ *
+ *      private a    : boolean; //=
+ *      readonly foo : string;
+ *
+ * Unlike alignObjectProperties, which only works with property key (typically single word), this marker
+ * works for multiple words, e.g. private, protected, readonly, etc.
+ */
+const RE_DBL_SLASH_COLON = new RegExp(/\/\/:\n/);
+const RE_DBL_SLASH_COLON_SEGMENTS = new RegExp(/(?<=\n)(?=[^\n]*\/\/:\n)/);
+const RE_COLON_LINE = new RegExp(/^(\s*)([^:]+?)\s*:/);
+
+/**
+ * Align by ':' or value starting at lines with EOL '//:', for consecutive colon lines.
+ */
+function alignColon(code: string, options: any): string {
+
+  if (!RE_DBL_SLASH_COLON.test(code) || !code || options.alignObjectProperties === 'none') {
+    return code;
+  }
+
+  // Break code into segments that starts with the '//:' lines
+  const segs = code.split(RE_DBL_SLASH_COLON_SEGMENTS);
+
+  // Align ':' in each segment and reconstruct code
+  return ''.concat(...segs.map((seg) => _alignColonBegin(seg, options)));
+}
+
+// Align assignment lines at the start of a segment
+function _alignColonBegin(seg: string, options: any): string {
+
+  // Skip if the segment doesn't start with '//:'
+  if (!RE_DBL_SLASH_COLON.test(seg) || !seg) {
+    return seg;
+  }
+
+  const getIndent = (line: string) => {
+    const match = line.match(RE_COLON_LINE) || [];
+    return match[1] ? match[1].length : 0;
+  };
+
+  // Collect lines to align ':'
+  const lines = seg.split(/(?<=\n)/);
+  let alignLines = [];
+  const indent = getIndent(lines[0]);
+
+  while (lines.length && RE_COLON_LINE.test(lines[0]) && getIndent(lines[0]) === indent) {
+    alignLines.push(lines.shift());
+  }
+
+  // Maximum length of code prior to ':'
+  // @ts-ignore
+  const maxLen = alignLines.map((line = '') => {
+    const match = line.match(RE_COLON_LINE) || [];
+    return match[2] ? match[2].length : 0;
+  }).sort((a, b) => b - a)[0];
+
+  // Align ':'
+  const alignColon = options.alignObjectProperties === 'colon';
+  alignLines = alignLines.map ((line = '') => {
+    // @ts-ignore
+    const match = line.match(RE_COLON_LINE) || [];
+    const len = match[2] ? match[2].length : 0;
+    return line.replace(
+      RE_COLON_LINE,
+      alignColon
+        ? ('$1$2' + ' '.repeat(maxLen - len) + ' :')
+        : ('$1$2:' + ' '.repeat(maxLen - len))
+    );
   });
 
   return ''.concat(...alignLines, ...lines);

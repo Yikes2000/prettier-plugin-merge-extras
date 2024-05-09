@@ -243,6 +243,16 @@ End-of-line "///=" does both:
   bbb = 1;     // two
   cc  = "ok";  // three
 ```
+End-of-line "//:" and "///:" are similar:
+```
+  class Foo {
+    aa   : boolean; //:
+    bbbb : string;
+
+    c  : boolean;  // charlie  ///:
+    dd : string;   // delta
+  }
+```
 <!-- prettier-ignore -->
 Default | CLI&nbsp;Override | API&nbsp;Override
 --- | --- | ---

@@ -9,7 +9,8 @@ Test separately against multiple versions of Prettier:
     v3-test  $ pnpm i
     v3-test  $ npx vitest run babel/extras typescript/extras
 
-Babel (Javascript) align-object-properties tests:
+
+Babel (Javascript) tests:
 
     v3-test/babel/extras/
 
@@ -39,6 +40,16 @@ Babel (Javascript) align-object-properties tests:
         preserve-last-blank-line/
             ...
 
-Typescript and v2-test symlink to the above tests.
 
-BUG: v2-test seems to be testing against Prettier v3.  Not because of the symlink.
+Typescript and v2-test are copies of the above tests.
+
+    v3-test/typescript/extras/
+        cp_babel.sh
+
+    v2-test/babel/extras/
+        cp_v3_babel.sh
+
+    v2-test/typescript/extras/
+        cp_v3_typescript.sh
+
+Run these *.sh in the above order to refresh those directories from v2-test/babel/extras.

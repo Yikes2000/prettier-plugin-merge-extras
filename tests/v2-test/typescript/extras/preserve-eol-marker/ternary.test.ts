@@ -2,23 +2,23 @@ import { Fixture, runTest } from '../../../extras-run-test';
 import { parser } from '../parser';
 
 const desc = '--preserve-eol-marker';
-const name = 'array';
+const name = 'ternary';
 
 const fixtures: Fixture[] = [
     {
-        name: `(${parser}) ${name} (1) n/a`,
+        name: `${name} (1) n/a`,
         input: `\
 //---------------------------------------- (1)
 
-a = [
-    1, 2, 3,
-    4, 5, 6,
-];
+msg =
+      a < 5 ? "too small"
+    : a > 5 ? "too big"
+    :         "just right";
 `,
         output: `\
 //---------------------------------------- (1)
 
-a = [1, 2, 3, 4, 5, 6];
+msg = a < 5 ? "too small" : a > 5 ? "too big" : "just right";
 `
     },
     {
@@ -26,17 +26,14 @@ a = [1, 2, 3, 4, 5, 6];
         input: `\
 //---------------------------------------- (2)
 
-a = [ //
-    1, 2, 3,
-    4, 5, 6,
-];
+msg =  //
+      a < 5 ? "too small"
+    : a > 5 ? "too big"
+    :         "just right";
 
-b = //
-    [
-        1, 2,
-        3, 4,
-        5, 6,
-    ];
+msg = a < 100  //
+    ? "too low"
+    : "enough";
 `,
     },
     {
@@ -45,18 +42,17 @@ b = //
         input: `\
 //---------------------------------------- (3)
 
-a = [ //
-    1, 2, 3,
-    4, 5, 6,
-];
+msg = a < 100  //
+    ? "too low"
+    : "enough";
 `,
         output: `\
 //---------------------------------------- (3)
 
-a = [
-    //
-    1, 2, 3, 4, 5, 6,
-];
+msg =
+    a < 100 //
+        ? "too low"
+        : "enough";
 `
     },
 ];

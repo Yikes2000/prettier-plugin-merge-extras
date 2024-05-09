@@ -1,62 +1,67 @@
 import { Fixture, runTest } from '../../../extras-run-test';
 import { parser } from '../parser';
 
-const desc = '--preserve-eol-marker';
-const name = 'array';
+const desc = '--preserve-first-blank-line';
+const name = 'parentheses block';
 
 const fixtures: Fixture[] = [
     {
-        name: `(${parser}) ${name} (1) n/a`,
+        name: `${name} (1) no-op`,
         input: `\
 //---------------------------------------- (1)
 
-a = [
-    1, 2, 3,
-    4, 5, 6,
-];
-`,
-        output: `\
-//---------------------------------------- (1)
+foo(
+    // force
+    arg1,
+    arg2,
 
-a = [1, 2, 3, 4, 5, 6];
-`
+    arg3,
+);
+`,
     },
     {
-        name: `${name} (2) preserve`,
+        name: `${name} (2) activated`,
         input: `\
 //---------------------------------------- (2)
 
-a = [ //
-    1, 2, 3,
-    4, 5, 6,
-];
+foo(
 
-b = //
-    [
-        1, 2,
-        3, 4,
-        5, 6,
-    ];
+    // force
+    arg1,
+    arg2,
+
+    arg3,
+);
+
+bar(
+
+    // force
+    arg1,
+    arg2,
+);
 `,
     },
     {
         name: `${name} (3) off`,
-        options: {preserveEolMarker: false},
+        options: {preserveFirstBlankLine: false},
         input: `\
 //---------------------------------------- (3)
 
-a = [ //
-    1, 2, 3,
-    4, 5, 6,
-];
+foo(
+
+    // force
+    arg1,
+    arg2,
+);
 `,
         output: `\
 //---------------------------------------- (3)
 
-a = [
-    //
-    1, 2, 3, 4, 5, 6,
-];
+foo(
+    // force
+    arg1,
+    arg2,
+);
 `
     },
 ];

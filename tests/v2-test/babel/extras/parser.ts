@@ -1,1 +1,1 @@
-../../../v3-test/babel/extras/parser.ts
+export const parser = 'babel';
