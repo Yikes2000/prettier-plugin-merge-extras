@@ -30,17 +30,69 @@ c =      "abc";   //
     {
         name: `${name} (3) still indents`,
         input: `\
-//---------------------------------------- (2)
+//---------------------------------------- (3)
     a    =    true; //
     b          = 1;  //
     c =      "abc";   //
 `,
         output: `\
-//---------------------------------------- (2)
+//---------------------------------------- (3)
 a    =    true; //
 b          = 1;  //
 c =      "abc";   //
 `,
+    },
+    {
+
+        name: `${name} (4) //: //= /// ///=`,
+        input: `\
+//---------------------------------------- (4)
+if (cond) {
+  a = true;      // extra space   //:
+  b = false;          // more...
+
+  foo = "bar";   //:
+
+  a2 = true;      // extra space   //=
+  c = false;          // more...
+
+  foo2 = "bar";   //=
+
+  a3 = true;      // extra space   ///
+  d = false;          // more...
+
+  foo3 = "bar";   ///
+
+  a4 = true;      // extra space   ///=
+  e = false;          // more...
+
+  foo4 = "bar";   ///=
+}
+`,
+        output: `\
+//---------------------------------------- (4)
+if (cond) {
+    a = true;      // extra space   //:
+    b = false; // more...
+
+    foo = "bar";   //:
+
+    a2 = true;      // extra space   //=
+    c  = false; // more...
+
+    foo2 = "bar";   //=
+
+    a3 = true;  // extra space   ///
+    d = false;  // more...
+
+    foo3 = "bar";  ///
+
+    a4 = true;   // extra space   ///=
+    e  = false;  // more...
+
+    foo4 = "bar";  ///=
+}
+`
     },
 ];
 

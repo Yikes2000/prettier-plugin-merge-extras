@@ -48,10 +48,10 @@ const RE_CLOSE_BLANK_LINE = new RegExp(/(?<=\n)(?:\s*\n)+(\s*[\}\]\)])/g);
  */
 const IGNORE = '// prettier-ignore';
 const RE_DOUBLE_SLASH_EOL = new RegExp(/^(.*\/\/)$/mg);
-const RE_DBL_SLASH_PRESERVE_SPACE = new RegExp(/(?<=\S)[ ]([ ]+\/\/=?(?:[^\n]+\/\/=?)?)$/mg);
+const RE_DBL_SLASH_PRESERVE_SPACE = new RegExp(/(?<=\S)[ ]([ ]+\/\/(?:[^\n]+\/\/)?(?:=|:|\/|\/=)?)$/mg);
 
 const RE_DBL_SLASH_IGNORE = new RegExp(`[ \\t]*${IGNORE}\\n(?=[^\\n]*//\\n)`, 'g');  // for post-process
-const RE_DBL_RESTORE_SPACE = new RegExp(/(?<=\S)\s\/\/(\s+\/\/=?(?:[^\n]+\/\/=?)?)$/mg);
+const RE_DBL_RESTORE_SPACE = new RegExp(/(?<=\S)[ ]\/\/(\s+\/\/(?:[^\n]+\/\/)?(?:=|:|\/|\/=)?)$/mg);
 
 /**
  * Preserve .method().chain() lines as-is, by adding inline comment lines.
@@ -69,7 +69,7 @@ const RE_DBL_RESTORE_SPACE = new RegExp(/(?<=\S)\s\/\/(\s+\/\/=?(?:[^\n]+\/\/=?)
  *         .foo().bar()
  *         .bat();
  */
-const RE_DOT_CHAIN_METHOD = new RegExp(/^(\s*\.[a-z_]\w*\()/mig);
+const RE_DOT_CHAIN_METHOD = new RegExp(/^(\s*\.[a-z_]\w*[\(\.])/mig);
 
 const DOT = '//__DOT__';
 const RE_DOT_LINE = new RegExp(`[ \\t]*${DOT}\\n`, 'g');  // for post-process
@@ -80,11 +80,12 @@ const RE_DOT_NO_PRESERVE = new RegExp(`(${NO_PRESERVE}\\n(?:[ \\t]*[^\\n]+\\n)+?
 /**
  * Prettier formats method chains as separate lines, e.g.
  *
- *     cy.method()            cy.method()
- *       //__DOT__              //__DOT__
- *       .foo().bar()   --->    .foo()
- *       //__DOT__              .bar()
- *       .bat();                //__DOT__
+ *     cy.method().m2()       cy.method()
+ *       //__DOT__              .m2()
+ *       .foo().bar()   --->    //__DOT__
+ *       //__DOT__              .foo()
+ *       .bat();                .bar()
+ *                              //__DOT__
  *                              .bat();
  *
  * Restore .foo().bar() using this RegExp.
@@ -103,6 +104,20 @@ const RE_CONCAT_DOTS = new RegExp(
   `(${DOT}\\n[ \\t]*\\.[^\\n]+(?:\\n[^\\n]+)*?(?:\\n[^\\n]*)?\\))\\n[ \\t]*(\\.[^\\n]+)`,
   'g'
 );
+// //__DOT__\n   .method()           ...\n              ')'\n             .more()
+// (${DOT}\\n                                 (?:\\n[^\\n]*)?\\))\\n
+//           [ \\t]*\\.[^\\n]+                                      [ \\t]*(\\.[^\\n]+)
+//                            (?:\\n[^\\n]+)*?
+//
+
+const RE_CONCAT_DOTS_BEFORE = new RegExp(
+  `(?<=^|\\n)([ \\t]*[^\\./ \\t][^\\n]+)\\n[ \\t]*(\\.[^\\n]+\\n)(?=(?:[ \\t]*\\.[^\\n]+\\n)*[ \\t]*${DOT})`,
+  // 'g'
+);
+//                    cy                   \n       .method()\n            .m2()\n             //__DOT__
+//           ([ \\t]*[^\\./ \\t][^\\n]+)          (\\.[^\\n]+\\n)
+// (?<=^|\\n)                           \\n[ \\t]*               (?=                         [ \\t]*${DOT})
+//                                                              (?:[ \\t]*\\.[^\\n]+\\n)*
 
 /**
  * Parser pre-process source code.
@@ -147,6 +162,11 @@ export function postprocess(code: string, options: PreserveLineOptions): string 
       code = code
         .replace(RE_CONCAT_DOTS, '$1$2')  // slightly faster if there're many to replace
         .replace(RE_CONCAT_DOTS, '$1$2');
+    }
+    while (code.match(RE_CONCAT_DOTS_BEFORE)) {
+      code = code
+      .replace(RE_CONCAT_DOTS_BEFORE, '$1$2')
+      .replace(RE_CONCAT_DOTS_BEFORE, '$1$2');
     }
 
     code = code.replace(RE_DOT_LINE, '');

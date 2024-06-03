@@ -39,7 +39,6 @@ A prettier plugin for less-opinionated options -- a fork of [prettier-plugin-mer
           .done();
 ```
 
-
 ## Installation
 
 For Prettier v2:
@@ -53,7 +52,6 @@ For Prettier v3:[^1]
 ```sh
 npm install -D prettier @yikes2000/prettier-plugin-merge-extras
 ```
-
 
 ## Configuration
 
@@ -81,7 +79,6 @@ export default {
 };
 ```
 
-
 ## Options
 
 ### Align Object Properties
@@ -89,6 +86,7 @@ export default {
 Align properties of object literals.
 
 Group consecutive lines of properties and inline comments for alignment:
+
 ```
   const a = {
     be  : true,
@@ -107,7 +105,9 @@ Group consecutive lines of properties and inline comments for alignment:
     h : "hi",
   }
 ```
+
 Alignment options: 'colon' (default), 'value', 'none'
+
 ```
   Align by 'colon':            Algn by 'value':
 
@@ -117,6 +117,7 @@ Alignment options: 'colon' (default), 'value', 'none'
         height : 20,                 height: 20,
     };                           };
 ```
+
 See `preserveEolMarker` option about aligning '=' symbol for assignments.
 
 <!-- prettier-ignore -->
@@ -124,16 +125,17 @@ Default | CLI&nbsp;Override | API&nbsp;Override
 --- | --- | ---
 `colon` | `--align-object-properties=none` | `alignObjectProperties: <string>`
 
-
 ### Align Single Property
 
 Determine if single property has added white space padding:
+
 ```
   const a = {
     // force multi-line
     bar : true,
   }
 ```
+
 Only applicable when `alignObjectProperties: "colon"`.
 
 <!-- prettier-ignore -->
@@ -141,10 +143,10 @@ Default | CLI&nbsp;Override | API&nbsp;Override
 --- | --- | ---
 `true` | `--align-single-property` | `alignSingleProperty: <boolean>`
 
-
 ### Merge Imports
 
 Merge simple imports:
+
 ```
   import { a, b } from 'foo';
   import { c } from 'foo';
@@ -155,6 +157,7 @@ Merged:
   import { a, b, c, d } from 'foo';
   import { eee } from 'bar';
 ```
+
 Currently a missing functionality of `@trivago/prettier-plugin-sort-imports`.
 
 <!-- prettier-ignore -->
@@ -162,10 +165,10 @@ Default | CLI&nbsp;Override | API&nbsp;Override
 --- | --- | ---
 `true` | `--no-merge-simple-imports` | `mergeSimpleImports: <bool>`
 
-
 ### Preserve Method Chain Breaks
 
 Preserve existing method chain breaks:
+
 ```
   cy.get("something")
     .value().matches('abc').matches('cde')
@@ -175,9 +178,11 @@ Preserve existing method chain breaks:
     }).andMore()
     .done();
 ```
+
 (Indentation is still handled by Prettier.)
 
 Otherwise Prettier formats method chain in one of two styles:
+
 ```
   cy.all().in().one().line();
 
@@ -190,6 +195,7 @@ Otherwise Prettier formats method chain in one of two styles:
 ```
 
 Add "// no-preserve" to revert to Prettier format:
+
 ```
   // no-preserve
   cy.get("something").old().style();
@@ -207,10 +213,10 @@ Default | CLI&nbsp;Override | API&nbsp;Override
 --- | --- | ---
 `true` | `--no-preserve-dot-chain` | `preserveDotChain: <bool>`
 
-
 ### Preserve by EOL Marker
 
 End-of-line "//" marker applies "// prettier-ignore" to that line, e.g.
+
 ```
   matrix = [  //
     1, 0, 1,
@@ -223,7 +229,9 @@ End-of-line "//" marker applies "// prettier-ignore" to that line, e.g.
     : matrix.length > 9 ? 'too big'
     :                     'just right';
 ```
+
 End-of-line "//=" marker aligns consecutive assignment lines:
+
 ```
   a   = true; //=
   bbb = 1;
@@ -231,19 +239,25 @@ End-of-line "//=" marker aligns consecutive assignment lines:
 
   d = 4;
 ```
+
 End-of-line "///" (triple slash) marker aligns '//' inline comments in consecutive lines:
+
 ```
   statement;  // step one ///
   a = 1;      // two
   cc = "ok";  // three
 ```
-End-of-line "///=" does both:
+
+End-of-line "///=" performs both alignments:
+
 ```
   a   = true;  // one ///=
   bbb = 1;     // two
   cc  = "ok";  // three
 ```
+
 End-of-line "//:" and "///:" are similar:
+
 ```
   class Foo {
     aa   : boolean; //:
@@ -253,16 +267,16 @@ End-of-line "//:" and "///:" are similar:
     dd : string;   // delta
   }
 ```
+
 <!-- prettier-ignore -->
 Default | CLI&nbsp;Override | API&nbsp;Override
 --- | --- | ---
 `true` | `--no-preserve-eol-marker` | `preserveEolMarker: <bool>`
 
-
-
 ### Preserve First Blank Line
 
 Preserve the first blank line of a block (curly, bracket, or parenthesis), e.g.
+
 ```
   if (condition) {
 
@@ -281,15 +295,16 @@ Preserve the first blank line of a block (curly, bracket, or parenthesis), e.g.
     1 + 3 + 5 + 7 + 9
   );
 ```
+
 <!-- prettier-ignore -->
 Default | CLI&nbsp;Override | API&nbsp;Override
 --- | --- | ---
 `true` | `--no-preserve-first-blank-line` | `preserveFirstBlankLine: <bool>`
 
-
 ### Preserve Last Blank Line
 
 Preserve the last blank line of a block (curly, bracket, or parenthesis), e.g.
+
 ```
   if (condition) {
     statement1;
@@ -297,21 +312,18 @@ Preserve the last blank line of a block (curly, bracket, or parenthesis), e.g.
 
   }
 ```
+
 <!-- prettier-ignore -->
 Default | CLI&nbsp;Override | API&nbsp;Override
 --- | --- | ---
 `true` | `--no-preserve-last-blank-line` | `preserveLastBlankLine: <bool>`
-
-
-
-
-
 
 ## Compatibility with other Prettier plugins
 
 This plugin must be positioned last, replacing [prettier-plugin-merge](https://github.com/ony3000/prettier-plugin-merge).
 
 JSON example:
+
 <!-- prettier-ignore -->
 ```json
 {
@@ -324,6 +336,7 @@ JSON example:
 ```
 
 JS example (CommonJS module):
+
 ```javascript
 module.exports = {
   plugins: [
@@ -334,7 +347,6 @@ module.exports = {
   braceStyle: 'stroustrup',
 };
 ```
-
 
 ## Limitations
 
@@ -349,9 +361,7 @@ Welcome contributors to support additional languages.
 
 This plugin's bonus options are implemented using RegExp, which is the simplest but hacky way to achieve these results,
 considering Prettier's rigidity. In a few rare corner cases situations these preserve options won't work, due to the limit
-of this RegExp approach.  Please kindly report them regardless.
-
-
+of this RegExp approach. Please kindly report them regardless.
 
 ## Credits
 

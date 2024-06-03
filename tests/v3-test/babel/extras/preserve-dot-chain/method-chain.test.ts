@@ -121,16 +121,27 @@ cy.get("foo")
 `,
     },
     {
-        name: `${name} (7) off`,
-        options: {preserveDotChain: false},
+        name: `${name} (7) chain on first line`,
         input: `\
 a = "// ---------------------------------------- (7)";
+a = ".... Why inline comment mess up test?!";
+
+cy.get("foo").cook().serve()
+    .check().a().b()
+    .value();
+`,
+    },
+    {
+        name: `${name} (8) off`,
+        options: {preserveDotChain: false},
+        input: `\
+a = "// ---------------------------------------- (8)";
 
 cy.get("foo")
   .check().value();
 `,
         output: `\
-a = "// ---------------------------------------- (7)";
+a = "// ---------------------------------------- (8)";
 
 cy.get("foo").check().value();
 `

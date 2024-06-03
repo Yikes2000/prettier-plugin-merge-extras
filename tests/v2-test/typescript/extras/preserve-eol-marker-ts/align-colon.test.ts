@@ -31,11 +31,11 @@ class Foo {
         output: `\
 //---------------------------------------- (1)
 class Foo {
-    private a1   : boolean; //:
+    private a1   : boolean;          //:
     protected a2 : string[];
     public a3    : string;
 
-    b   : string; //:
+    b   : string;          //:
     cc  : string;
     ddd : {
         d1  : number;
@@ -71,11 +71,11 @@ class Foo {
         output: `\
 //---------------------------------------- (2)
 class Foo {
-    private a1:   boolean; //:
+    private a1:   boolean;          //:
     protected a2: string[];
     public a3:    string;
 
-    b:   string; //:
+    b:   string;          //:
     cc:  string;
     ddd: {
         d1:  number;
