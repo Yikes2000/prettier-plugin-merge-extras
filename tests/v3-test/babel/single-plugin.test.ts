@@ -9,6 +9,7 @@ import * as thisPlugin from '@/packages/v3-plugin';
 const options = {
   ...baseOptions,
   parser: 'babel',
+  returnParentheses: true,
 };
 
 const sortImportsPluginOptions = {

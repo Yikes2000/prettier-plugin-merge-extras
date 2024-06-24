@@ -71,6 +71,23 @@ if (cond1) {
 }
 `
     },
+    {
+        name: `${name} (3) arrow function`,
+        input: `\
+//---------------------------------------- (3)
+if (cond1) {
+    a = true;  //=
+    foo = bar((i) => i + 1);
+}
+`,
+        output: `\
+//---------------------------------------- (3)
+if (cond1) {
+    a   = true;  //=
+    foo = bar((i) => i + 1);
+}
+`
+    },
 ];
 
 runTest({ desc, parser, fixtures });

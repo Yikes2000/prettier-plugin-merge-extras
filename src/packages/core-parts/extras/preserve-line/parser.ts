@@ -191,7 +191,7 @@ export function postprocess(code: string, options: PreserveLineOptions): string 
  */
 const RE_DBL_SLASH_EQUAL = new RegExp(/\/\/=\n/);
 const RE_ASSIGN_SEGMENTS = new RegExp(/(?<=(?:^|\n)[^=\n]*\n)(?=\s*\S.* [?&|*/+-]*=\s*\S)/);
-const RE_ASSIGN_LINE = new RegExp(/^(\s*)(\S.*) ([?&|*/+-]*=\s*\S)/);
+const RE_ASSIGN_LINE = new RegExp(/^(\s*)(\S[^=]*) ([?&|*/+-]*=\s*\S)/);
 
 /**
  * Align the equal sign starting at lines with EOL '//=', for consecutive assignment lines.

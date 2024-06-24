@@ -98,8 +98,8 @@ Group consecutive lines of properties and inline comments for alignment:
 
     east : 123,
     foo  : [
-      // multi-line, breaks group
-      1, 2, 3,
+        // multi-line, breaks group
+        1, 2, 3,
     ],
     g : "new group",
     h : "hi",
@@ -118,12 +118,12 @@ Alignment options: 'colon' (default), 'value', 'none'
     };                           };
 ```
 
-See `preserveEolMarker` option about aligning '=' symbol for assignments.
-
 <!-- prettier-ignore -->
 Default | CLI&nbsp;Override | API&nbsp;Override
 --- | --- | ---
 `colon` | `--align-object-properties=none` | `alignObjectProperties: <string>`
+
+See `preserveEolMarker` option about aligning '=' symbol for assignments.
 
 ### Align Single Property
 
@@ -141,7 +141,7 @@ Only applicable when `alignObjectProperties: "colon"`.
 <!-- prettier-ignore -->
 Default | CLI&nbsp;Override | API&nbsp;Override
 --- | --- | ---
-`true` | `--align-single-property` | `alignSingleProperty: <boolean>`
+`true` | `--no-align-single-property` | `alignSingleProperty: <boolean>`
 
 ### Merge Imports
 
@@ -158,7 +158,7 @@ Merged:
   import { eee } from 'bar';
 ```
 
-Currently a missing functionality of `@trivago/prettier-plugin-sort-imports`.
+Supplement a missing functionality of `@trivago/prettier-plugin-sort-imports`.
 
 <!-- prettier-ignore -->
 Default | CLI&nbsp;Override | API&nbsp;Override
@@ -179,7 +179,7 @@ Preserve existing method chain breaks:
     .done();
 ```
 
-(Indentation is still handled by Prettier.)
+(Indentation is handled by Prettier.)
 
 Otherwise Prettier formats method chain in one of two styles:
 
@@ -317,6 +317,21 @@ Preserve the last blank line of a block (curly, bracket, or parenthesis), e.g.
 Default | CLI&nbsp;Override | API&nbsp;Override
 --- | --- | ---
 `true` | `--no-preserve-last-blank-line` | `preserveLastBlankLine: <bool>`
+
+### Return Parentheses
+
+Suppress the outer parentheses in multi-line return statement, e.g.
+
+```
+  return <div>
+    <div>Hello world!</div>
+  </div>;
+```
+
+<!-- prettier-ignore -->
+Default | CLI&nbsp;Override | API&nbsp;Override
+--- | --- | ---
+`false` | `--return-parentheses` | `returnParentheses: <bool>`
 
 ## Compatibility with other Prettier plugins
 

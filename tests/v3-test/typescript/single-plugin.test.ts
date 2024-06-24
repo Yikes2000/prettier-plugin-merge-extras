@@ -9,6 +9,7 @@ import * as thisPlugin from '@/packages/v3-plugin';
 const options = {
   ...baseOptions,
   parser: 'typescript',
+  returnParentheses: true,
 };
 
 const sortImportsPluginOptions = {

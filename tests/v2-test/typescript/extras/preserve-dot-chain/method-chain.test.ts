@@ -132,16 +132,41 @@ cy.get("foo").cook().serve()
 `,
     },
     {
-        name: `${name} (8) off`,
-        options: {preserveDotChain: false},
+        name: `${name} (8) no chain on first line`,
         input: `\
 a = "// ---------------------------------------- (8)";
+
+cy
+    .get("foo")
+    .check().value();
+`
+    },
+    {
+        name: `${name} (9) assignment on first line`,
+        input: `\
+a = "// ---------------------------------------- (9)";
+a = ".... Why inline comment mess up test?!";
+
+const x = cy.get("foo")
+    .check().a().b()
+    .value();
+
+const y = await cy
+    .get("bar")
+    .check().value();
+`,
+    },
+    {
+        name: `${name} (10) off`,
+        options: {preserveDotChain: false},
+        input: `\
+a = "// ---------------------------------------- (10)";
 
 cy.get("foo")
   .check().value();
 `,
         output: `\
-a = "// ---------------------------------------- (8)";
+a = "// ---------------------------------------- (10)";
 
 cy.get("foo").check().value();
 `

@@ -1,15 +1,13 @@
-
 interface AlignOptions {
-  alignObjectProperties?: string;
-  alignSingleProperty?: boolean;
-};
+    alignObjectProperties?: string;
+    alignSingleProperty?: boolean;
+}
 
-const validOptions = ['colon', 'value', 'none'];
-let alignObjPropBy = 'colon';
+const validOptions = ["colon", "value", "none"];
+let alignObjPropBy = "colon";
 let alignSingleProperty = false;
 
 function setOptions(options: AlignOptions) {
-
     alignObjPropBy = options.alignObjectProperties ?? alignObjPropBy;
 
     if (!validOptions.includes(alignObjPropBy)) {
@@ -20,22 +18,20 @@ function setOptions(options: AlignOptions) {
 }
 
 export function postprocess(code: string, options: any): string {
-
     setOptions(options);
-    if (alignObjPropBy === 'none') {
+    if (alignObjPropBy === "none") {
         return code;
     }
 
     return alignObjectProperties(code, options);
 }
 
-//---------------------------------------------------------------------------------------------------- @ignore
+// ---------------------------------------------------------------------------------------------------- @ignore
 
 /**
  * Align object properties.
  */
 function alignObjectProperties(code: string, options: any): string {
-
     // Split code according to open and close curly braces, '{' and '}'
     const segs = splitByCurly(code);
     const group = {};
@@ -52,7 +48,6 @@ function alignObjectProperties(code: string, options: any): string {
             .map((indentLvl) => Number(indentLvl))
             .filter((indentLvl) => indentLvl > indent)
             .forEach((indentLvl) => {
-
                 if (ignoreAboveLvl == -1 || indentLvl <= ignoreAboveLvl) {
                     alignObjectPropLevel(segs, group[indentLvl], indentLvl);
                 }
@@ -68,16 +63,15 @@ function alignObjectProperties(code: string, options: any): string {
             if (indent <= ignoreAboveLvl) {
                 ignoreAboveLvl = -1;
             }
-        }
-        else if (seg.beginIgnore) {
+        } else if (seg.beginIgnore) {
             ignoreAboveLvl = indent;
         }
     }
 
-    return ''.concat(...segs.map((x) => x.lines));
+    return "".concat(...segs.map((x) => x.lines));
 }
 
-//---------------------------------------------------------------------------------------------------- @ignore
+// ---------------------------------------------------------------------------------------------------- @ignore
 
 /**
  * RegExp to split code by open/close curly brace into segments of lines:
@@ -96,12 +90,11 @@ function alignObjectProperties(code: string, options: any): string {
  *           <=== RE: (?<=\n)(?=[ \t]*[\}\)\]])
  *     >    }
  */
-const RE_CURLY_BRACE_SEGMENTATION =
-  new RegExp(/(?<=\{(?:[ \t]*\/\/(?:[^\n]*\/\/)?)?\n)|(?<=\n)(?=[ \t]*[\}\)\]])/s);
+const RE_CURLY_BRACE_SEGMENTATION = new RegExp(/(?<=\{(?:[ \t]*\/\/(?:[^\n]*\/\/)?)?\n)|(?<=\n)(?=[ \t]*[\}\)\]])/s);
 
 // Test if a segment starts with close brace '}', or close symbol ('}', ')', or ']')
 const RE_START_IS_CLOSE_CURLY = new RegExp(/^[ \t]*\}/);
-const RE_START_IS_CLOSE_SYMBOL =new RegExp(/^[ \t]*[\}\)\]]/);
+const RE_START_IS_CLOSE_SYMBOL = new RegExp(/^[ \t]*[\}\)\]]/);
 
 // Test if a segment ends with open brace '{', plus optional '//' or '// ... //'
 const RE_END_IS_OPEN_CURLY = new RegExp(/\{(?:[ \t]*\/\/(?:[^\n]*\/\/)?)?\n[ \t\n]*$/);
@@ -120,10 +113,8 @@ function getIndent(line: string) {
 
 // Create a rudimentary segment, with data about first and last non-blank lines
 function makeSegment(lines: string) {
-
     // All blank lines
     if (lines.match(/^[ \t\n]*$/)) {
-
         return {
             lines,
             firstLine: { indent: 9999 },
@@ -135,7 +126,7 @@ function makeSegment(lines: string) {
     const firstLine = lines.match(/^(?:[ \t]*\n)*([ \t]*\S.*\n)/)[1];
     const lastLine = lines.match(/([ \t]*\S.*\n)(?:[ \t\n]*)$/)[1];
 
-    const linesNoComment = lines.replace(/\s*\/\/[^\n]*(?=\n)/g, '');
+    const linesNoComment = lines.replace(/\s*\/\/[^\n]*(?=\n)/g, "");
 
     // prettier-ignore
     return {
@@ -193,49 +184,36 @@ function makeSegment(lines: string) {
  *
  */
 function splitByCurly(code: string): any[] {
-
     // Split code into rudimentary line segments by curly braces
-    const rawSegs = code.split(RE_CURLY_BRACE_SEGMENTATION)
-        .map((lines) => makeSegment(lines));
+    const rawSegs = code.split(RE_CURLY_BRACE_SEGMENTATION).map((lines) => makeSegment(lines));
 
     // Combine segments when indentation is wrong
-    const segs = [ rawSegs.shift() ];
+    const segs = [rawSegs.shift()];
     while (rawSegs.length) {
-
         const prev = segs[segs.length - 1];
         const next = rawSegs.shift();
 
         // Open '{' followed by close '}' curly line must have same indent
         const openCloseBadIndent =
-
-            prev.endIsOpenCurly && next.startIsCloseCurly
-            && prev.lastLine.indent !== next.firstLine.indent;
+            prev.endIsOpenCurly && next.startIsCloseCurly && prev.lastLine.indent !== next.firstLine.indent;
 
         // Open curly must lead to greater indent in the next segment
         const openNotIncreaseIndent =
-
-            prev.endIsOpenCurly && !next.startIsCloseCurly
-            && prev.lastLine.indent >= next.firstLine.indent;
+            prev.endIsOpenCurly && !next.startIsCloseCurly && prev.lastLine.indent >= next.firstLine.indent;
 
         // Close symbol (curly, bracket, or parenthesis) must reduce indent from previous segment
-        const closeNotReduceIndent =
-
-            next.startIsCloseSymbol
-            && prev.firstLine.indent <= next.firstLine.indent;
+        const closeNotReduceIndent = next.startIsCloseSymbol && prev.firstLine.indent <= next.firstLine.indent;
 
         // Previous segment first line indentation must be less or equal to the last line's indent
         const prevSegInvalidIndent =
+            prev.firstLine.indent > prev.lastLine.indent &&
+            !(prev.lastLine.text.match(/(?:^\s*[\)\}\]\>\:]|\`,?)/) || prev.endIsOpenCurly);
 
-            prev.firstLine.indent > prev.lastLine.indent
-            && !(prev.lastLine.text.match(/(?:^\s*[\)\}\]\>\:]|\`,?)/) || prev.endIsOpenCurly);
-
-        const mergeToPrev = openCloseBadIndent || openNotIncreaseIndent || closeNotReduceIndent
-            || prevSegInvalidIndent;
+        const mergeToPrev = openCloseBadIndent || openNotIncreaseIndent || closeNotReduceIndent || prevSegInvalidIndent;
 
         if (mergeToPrev) {
             segs[segs.length - 1] = makeSegment(prev.lines + next.lines);
-        }
-        else {
+        } else {
             segs.push(next);
         }
     }
@@ -243,7 +221,7 @@ function splitByCurly(code: string): any[] {
     return segs;
 }
 
-//---------------------------------------------------------------------------------------------------- @ignore
+// ---------------------------------------------------------------------------------------------------- @ignore
 
 /**
  * Align object properties for segments in the same scope (indentation level).
@@ -261,7 +239,6 @@ function splitByCurly(code: string): any[] {
  * '// <--' lines are in the same scope, albeit two groups.  Consecutive lines form a group.
  */
 function alignObjectPropLevel(segs: any[], idx: number[], indent: number) {
-
     // Skip if function or class declaration
     if (idx[0] > 0) {
         const prevSeg = segs[idx[0] - 1];
@@ -277,8 +254,8 @@ function alignObjectPropLevel(segs: any[], idx: number[], indent: number) {
     const RE_COMMENT = new RegExp(`^[ ]{${indent}}//`);
     const RE_SPREAD_OR_PROP_SHORTHAND = new RegExp(`^[ ]{${indent}}(?:\\.\\.\\.)?\\w+,`);
 
-    const isGroupContinuation = (line) => RE_PROPERTY.test(line) || RE_COMMENT.test(line)
-            || RE_SPREAD_OR_PROP_SHORTHAND.test(line);
+    const isGroupContinuation = (line) =>
+        RE_PROPERTY.test(line) || RE_COMMENT.test(line) || RE_SPREAD_OR_PROP_SHORTHAND.test(line);
 
     let change = { count: 0 };
 
@@ -300,7 +277,7 @@ function alignObjectPropLevel(segs: any[], idx: number[], indent: number) {
 
             // Start a new chunk when last chunk ends with 'other' line and the current line is a group-continuation line
             if (!isPrevChunkContinuing && isLineContinuingGroup) {
-                chunks.push(lastChunk = []);
+                chunks.push((lastChunk = []));
             }
 
             lastChunk.push(line);
@@ -308,16 +285,14 @@ function alignObjectPropLevel(segs: any[], idx: number[], indent: number) {
         }
 
         // Align each chunk, then reconstitute into strings
-        chunks = chunks
-            .map((chunk) => alignObjectPropGroup(chunk, indent, change))
-            .map((chunk) => ''.concat(...chunk));
+        chunks = chunks.map((chunk) => alignObjectPropGroup(chunk, indent, change)).map((chunk) => "".concat(...chunk));
 
         seg.chunks = chunks;
     });
 
     // Exception: skip for single or no property
     if (change.count > 0 && (change.count > 1 || alignSingleProperty)) {
-        mySegs.forEach((seg) => seg.lines = ''.concat(...seg.chunks));
+        mySegs.forEach((seg) => (seg.lines = "".concat(...seg.chunks)));
     }
 }
 
@@ -325,27 +300,26 @@ function alignObjectPropLevel(segs: any[], idx: number[], indent: number) {
  * RegExp for property key 'key:', '[key]:', '"key":', "'key':", '#key:', 'key$:', etc
  */
 function getRegExpProperty(indent: number) {
-    return new RegExp(`^[ ]{${indent}}([^ :]+|(['"])[^\\1\\n]+\\1):`);
+    return new RegExp(`^[ ]{${indent}}([^'" :]+|(['"])[^\\1\\n]+\\1):`);
 }
 
 /**
  * Align object properties in a given group of lines.
  */
 function alignObjectPropGroup(group: string[], indent: number, change: any): string[] {
-
     const RE_PROPERTY = getRegExpProperty(indent);
 
     // Keep a countdown of ticks if there are even number of them, so we ignore text when count is odd
-    let ticks = countBackTicks(''.concat(...group));
-    ticks = ( ticks % 2 ) ? 0 : ticks;
+    let ticks = countBackTicks("".concat(...group));
+    ticks = ticks % 2 ? 0 : ticks;
 
     // What's the length of the longest property key?
-    const maxLen = group.filter((line) => RE_PROPERTY.test(line)) // property lines only
+    const maxLen = group
+        .filter((line) => RE_PROPERTY.test(line)) // property lines only
         .map((line) => line.match(RE_PROPERTY)[1].length) // get property keys, their length
         .sort((a, b) => b - a)[0]; // get the maximum length
 
     group = group.map((line) => {
-
         const key = (line.match(RE_PROPERTY) || {})[1];
         const inBetweenTicks = ticks > 0 && ticks % 2;
 
@@ -354,9 +328,9 @@ function alignObjectPropGroup(group: string[], indent: number, change: any): str
 
             line = line.replace(
                 RE_PROPERTY,
-                (alignObjPropBy === 'colon')
-                    ? (' '.repeat(indent) + key + ' '.repeat(padLen + 1) + ':')
-                    : (' '.repeat(indent) + key + ':' + ' '.repeat(padLen)),
+                alignObjPropBy === "colon"
+                    ? " ".repeat(indent) + key + " ".repeat(padLen + 1) + ":"
+                    : " ".repeat(indent) + key + ":" + " ".repeat(padLen),
             );
             change.count++;
         }
@@ -386,5 +360,5 @@ function alignObjectPropGroup(group: string[], indent: number, change: any): str
  * We ignore the text between back-ticks.
  */
 function countBackTicks(code: string): number {
-    return code.split('').filter((c) => c ==="`").length;
+    return code.split("").filter((c) => c === "`").length;
 }
