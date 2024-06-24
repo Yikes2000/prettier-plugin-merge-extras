@@ -9,6 +9,7 @@ import * as thisPlugin from '@/packages/v2-plugin';
 const options = {
   ...baseOptions,
   parser: 'babel',
+  returnParentheses: true,
 };
 
 const fixtures: Fixture[] = [

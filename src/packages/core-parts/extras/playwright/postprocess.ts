@@ -23,46 +23,46 @@
  */
 
 interface PlaywrightOptions {
-  playwrightClickGrouping?: boolean;
+    playwrightClickGrouping?: boolean;
 }
 
 let pwClickGrouping = false;
 
 function setOptions(options: PlaywrightOptions) {
-  pwClickGrouping = !!options.playwrightClickGrouping;
+    pwClickGrouping = !!options.playwrightClickGrouping;
 }
 
-const RE_CLICK = new RegExp(/\.click\(\)/);
+const RE_CLICK = /\.click\(\)/;
 
 export function postprocess(code: string, options: any): string {
-  setOptions(options);
+    setOptions(options);
 
-  // Skip if turned off, or no '.click()' detected
-  if (!pwClickGrouping || !RE_CLICK.test(code)) {
+    // Skip if turned off, or no '.click()' detected
+    if (!pwClickGrouping || !RE_CLICK.test(code)) {
+        return code;
+    }
+
+    if (pwClickGrouping) {
+        // eslint-disable-next-line @typescript-eslint/no-use-before-define, no-param-reassign
+        code = groupByClickCalls(code);
+    }
+
     return code;
-  }
-
-  if (pwClickGrouping) {
-    code = groupByClickCalls(code);
-  }
-
-  return code;
 }
 
-//---------------------------------------------------------------------------------------------------- @ignore
+// ---------------------------------------------------------------------------------------------------- @ignore
 
-const RE_GROUP_CLICK_CALL = new RegExp(
-  /(?<=\{\n|\s*await expect\([^\n]+?(?:\n[ ]*\.[^\n]+?)*;\n)([ ]*await [^\n]+(?:\n\s*\.[^\n]+?)*\s*\.click\([^\n]*\);\n)/g,
-);
-// (?<=\{\n|\s*await expect\([^\n]+?                    ;\n)
-//                                  (?:\n[ ]*\.[^\n]+?)*    ([ ]*await [^\n]+                   \s*\.click\([^\n]*\);\n)
-//                                                                           (?:\n\s*\.[^\n]+?)*
+const RE_GROUP_CLICK_CALL =
+    /(?<=\{\n|\s*await expect\([^\n]+?(?:\n[ ]*\.[^\n]+?)*;\n)([ ]*await [^\n]+(?:\n\s*\.[^\n]+?)*\s*\.click\([^\n]*\);\n)/g;
+//   (?<=\{\n|\s*await expect\([^\n]+?                    ;\n)
+//                                    (?:\n[ ]*\.[^\n]+?)*    ([ ]*await [^\n]+                   \s*\.click\([^\n]*\);\n)
+//                                                                             (?:\n\s*\.[^\n]+?)*
 
 function groupByClickCalls(code: string): string {
-  //
-  if (!pwClickGrouping || !RE_GROUP_CLICK_CALL.test(code)) {
-    return code;
-  }
+    //
+    if (!pwClickGrouping || !RE_GROUP_CLICK_CALL.test(code)) {
+        return code;
+    }
 
-  return code.replace(RE_GROUP_CLICK_CALL, '\n$1');
+    return code.replace(RE_GROUP_CLICK_CALL, "\n$1");
 }

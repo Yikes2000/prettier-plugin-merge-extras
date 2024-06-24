@@ -1,15 +1,19 @@
-import { preprocess as _preprocess, postprocess as _postprocess } from './parser';
-import { options } from './options';
+import { options } from "./options";
+import { preprocess as _preprocess, postprocess as _postprocess } from "./parser";
 
-const handleParsers = ['babel', 'typescript'];
+const handleParsers = ["babel", "typescript"];
 
 // Export 'preprocess' and 'postprocess' functions that check for handled languages
 export const PreserveLine = {
     options,
 
-    preprocess: (code: string, options: any) =>
-        handleParsers.includes(options.parserName) ? _preprocess(code, options) : code,
+    preprocess: (
+        code: string,
+        opts: any, //
+    ) => (handleParsers.includes(opts.parserName) ? _preprocess(code, opts) : code),
 
-    postprocess: (code: string, options: any) =>
-        handleParsers.includes(options.parserName) ? _postprocess(code, options) : code
+    postprocess: (
+        code: string,
+        opts: any, //
+    ) => (handleParsers.includes(opts.parserName) ? _postprocess(code, opts) : code),
 };
