@@ -88,6 +88,23 @@ if (cond1) {
 }
 `
     },
+    {
+        name: `${name} (4) "if" corner case`,
+        input: `\
+//---------------------------------------- (4)
+if (typeof x != "undefined") {
+    const aaa = 1; //=
+    const b = 2;
+}
+`,
+        output: `\
+//---------------------------------------- (4)
+if (typeof x != "undefined") {
+    const aaa = 1; //=
+    const b   = 2;
+}
+`
+    },
 ];
 
 runTest({ desc, parser, fixtures });

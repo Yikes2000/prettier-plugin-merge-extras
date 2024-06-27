@@ -37,6 +37,12 @@ A prettier plugin for less-opinionated options -- a fork of [prettier-plugin-mer
               xyz: true
           })
           .done();
+
+    Return without parentheses:
+
+        return <div>
+            <div>Hello world!</div>
+        </div>;
 ```
 
 ## Installation
