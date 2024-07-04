@@ -27,6 +27,32 @@ function sum() {
 `,
     },
     {
+        name: `${name} (1.1) continued expression`,
+        input: `\
+//---------------------------------------- (1.1)
+function sum() {
+    return foo("abcd.efgh").bar() &&
+        sum(
+            sum(1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
+            sum(1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
+        ) + 1;
+}
+`,
+    },
+    {
+        name: `${name} (1.2) method chain onto second line`,
+        input: `\
+//---------------------------------------- (1.2)
+function sum() {
+    return foo().bar()
+        .sum(
+            sum(1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
+            sum(1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
+        ) + 1;
+}
+`,
+    },
+    {
         name: `${name} (2) strip parentheses`,
         input: `\
 //---------------------------------------- (2)

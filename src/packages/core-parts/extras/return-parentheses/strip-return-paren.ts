@@ -33,16 +33,17 @@ export function stripReturnParentheses(code: string): string {
             returnBlock.push(lines.shift());
         }
 
-        // Failed to find end of return block "<INDENT>);\n", put back accumulated lines except the first "return (\n" line
-        if (!endReturnRE.test(returnBlock[returnBlock.length - 1])) {
-            linesDone.push(returnBlock.shift());
-            lines = [...returnBlock, ...lines];
-        }
-
         // Found valid return block -- strip its outer parentheses
-        else {
+        if (endReturnRE.test(returnBlock[returnBlock.length - 1])) {
             // eslint-disable-next-line @typescript-eslint/no-use-before-define
             linesDone.push(stripReturnOuterParentheses(returnBlock));
+        }
+
+        // Otherwise failed to find end of return block "<INDENT>);\n",
+        else {
+            // Put back accumulated lines except the first "return (\n" line
+            linesDone.push(returnBlock.shift());
+            lines = [...returnBlock, ...lines];
         }
     }
 
@@ -53,7 +54,7 @@ export function stripReturnParentheses(code: string): string {
 const RE_INDENT = /^(?<INDENT>[ \t]*)/;
 
 // Detect closing parenthesis or brackets
-const RE_CLOSING_SYMBOL = /^\s*[})\]<]/;
+//const RE_CLOSING_SYMBOL = /^\s*[})\]<]/;
 
 /**
  * Given a multi-line return statement, strip the outer parentheses.
@@ -87,6 +88,10 @@ function stripReturnOuterParentheses(returnBlock: string[]): string {
     const match2 = returnBlock[1].match(RE_INDENT);
     const indent2 = match2?.groups?.INDENT;
 
+    // Decide whether to de-indent the block, by matching open/close symbols of first and last lines of inner block
+    const innerFirstLastLine = returnBlock[1] + returnBlock[returnBlock.length - 2].replace(/^\s+/, "");
+    const shouldDedent = innerFirstLastLine.match(/\(\n\)|\{\n\}|\[\n\]|>\n</) || returnBlock[2].match(/^\s*\./);
+
     // Combine first two lines, remove "(" from "return ("
     const firstLine = returnBlock
         .splice(0, 2)
@@ -96,10 +101,11 @@ function stripReturnOuterParentheses(returnBlock: string[]): string {
     returnBlock.splice(returnBlock.length - 1, 1); // remove last line ");"
     returnBlock.push((returnBlock.pop() || "").replace(/\n$/, ";\n")); // append ";" to the (new) last line
 
-    // Dedent remaining lines if the last line start with a closing parenthesis or bracket
-    const otherLines = !RE_CLOSING_SYMBOL.test(returnBlock[returnBlock.length - 1])
-        ? returnBlock
-        : returnBlock.map((line) => line.replace(new RegExp(`^${indent2}`), `${indent1}`));
+    // Dedent remaining lines if necessary
+    if (shouldDedent) {
+        // eslint-disable-next-line no-param-reassign
+        returnBlock = returnBlock.map((line) => line.replace(new RegExp(`^${indent2}`), `${indent1}`));
+    }
 
-    return stripReturnParentheses([firstLine, ...otherLines].join(""));
+    return stripReturnParentheses([firstLine, ...returnBlock].join(""));
 }

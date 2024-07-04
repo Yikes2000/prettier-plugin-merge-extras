@@ -30,6 +30,25 @@ const a = {
 };
 `,
     },
+    {
+        name: `${name} (2) computed property name`,
+        input: `\
+//---------------------------------------- (2)
+const a = {
+    bbbb: true,
+    [c + ":d"]: 2,
+    [\`\${c} : d\`]: 3,
+};
+`,
+        output: `\
+//---------------------------------------- (2)
+const a = {
+    bbbb         : true,
+    [c + ":d"]   : 2,
+    [\`\${c} : d\`] : 3,
+};
+`,
+    },
 ];
 
 runTestAlign({ desc, parser, fixtures });
