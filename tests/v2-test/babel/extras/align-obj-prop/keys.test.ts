@@ -49,6 +49,17 @@ const a = {
 };
 `,
     },
+    {
+        name: `${name} (3) corner case`,
+        input: `\
+//---------------------------------------- (3)
+const a = {
+    "de-LI" : { format: \`12'345.67CHF\`, dec: "." },
+    en      : { format: \`$12,345.67\`, dec: "." },
+    "en-AU" : { format: \`$12,345.67\`, dec: "." },
+};
+`,
+    },
 ];
 
 runTestAlign({ desc, parser, fixtures });
