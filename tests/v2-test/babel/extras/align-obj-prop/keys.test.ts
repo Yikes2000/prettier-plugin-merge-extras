@@ -50,7 +50,7 @@ const a = {
 `,
     },
     {
-        name: `${name} (3) corner case`,
+        name: `${name} (3) quoted key`,
         input: `\
 //---------------------------------------- (3)
 const a = {
