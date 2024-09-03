@@ -1,5 +1,7 @@
-// RegExp for "<INDENT>return (\n" in file or line
-const RE_RETURN_PARENTHESIS_LINE = /^(?<INDENT>[ \t]*)return[ \t]+\([ \t]*\n/;
+// RegExp for "<INDENT>return (\n" or "...=> (\n"
+const RE_RETURN_OR_ARROW_FN_PAREN =
+    // @ts-ignore
+    /^(?<INDENT>[ \t]*)(?<RETURN_OR_ARROW_FN>return|[a-zA-Z_][^\n]+\s*=>)[ \t]*\([ \t]*\n[ \t]*/;
 
 /**
  * Strip outer parentheses from all multi-line return statements.
@@ -14,7 +16,7 @@ export function stripReturnParentheses(code: string): string {
     while (lines.length > 0) {
         // Find next "<INDENT>return (\n" line
         // eslint-disable-next-line no-cond-assign
-        while (lines.length > 0 && !(match = lines[0].match(RE_RETURN_PARENTHESIS_LINE))) {
+        while (lines.length > 0 && !(match = lines[0].match(RE_RETURN_OR_ARROW_FN_PAREN))) {
             linesDone.push(lines.shift());
         }
 
@@ -51,10 +53,8 @@ export function stripReturnParentheses(code: string): string {
 }
 
 // RegExp for "<INDENT>..."
+// @ts-ignore
 const RE_INDENT = /^(?<INDENT>[ \t]*)/;
-
-// Detect closing parenthesis or brackets
-//const RE_CLOSING_SYMBOL = /^\s*[})\]<]/;
 
 /**
  * Given a multi-line return statement, strip the outer parentheses.
@@ -92,11 +92,8 @@ function stripReturnOuterParentheses(returnBlock: string[]): string {
     const innerFirstLastLine = returnBlock[1] + returnBlock[returnBlock.length - 2].replace(/^\s+/, "");
     const shouldDedent = innerFirstLastLine.match(/\(\n\)|\{\n\}|\[\n\]|>\n</) || returnBlock[2].match(/^\s*\./);
 
-    // Combine first two lines, remove "(" from "return ("
-    const firstLine = returnBlock
-        .splice(0, 2)
-        .join("")
-        .replace(/^(\s*return)\s*\(\s*\n\s*/, "$1 ");
+    // Combine first two lines, remove "(" from "return (" or "...=> (\n"
+    const firstLine = returnBlock.splice(0, 2).join("").replace(RE_RETURN_OR_ARROW_FN_PAREN, "$1$2 ");
 
     returnBlock.splice(returnBlock.length - 1, 1); // remove last line ");"
     returnBlock.push((returnBlock.pop() || "").replace(/\n$/, ";\n")); // append ";" to the (new) last line
