@@ -1,6 +1,6 @@
 {
   "name": "@yikes2000/prettier-plugin-merge-extras",
-  "version": "0.7.0-extras.5",
+  "version": "0.7.1-extras.2",
   "private": true,
   "description": "A prettier plugin for extra options -- a fork of prettier-plugin-merge by necessity.",
   "keywords": [
