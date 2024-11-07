@@ -18,3 +18,5 @@ for dir in $( cd $TARGET ; find . -mindepth 1 -type d ) ; do
         cp -rv $TARGET/$dir/*.test.ts $dir
     fi
 done
+
+cp -f $TARGET/.prettierrc.json .

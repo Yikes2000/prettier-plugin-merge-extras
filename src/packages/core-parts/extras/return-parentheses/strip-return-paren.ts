@@ -14,7 +14,7 @@ export function stripReturnParentheses(code: string): string {
     let match;
 
     while (lines.length > 0) {
-        // Find next "<INDENT>return (\n" line
+        // Find next "<INDENT>return (\n" or "...=> (" line
         // eslint-disable-next-line no-cond-assign
         while (lines.length > 0 && !(match = lines[0].match(RE_RETURN_OR_ARROW_FN_PAREN))) {
             linesDone.push(lines.shift());
@@ -25,14 +25,24 @@ export function stripReturnParentheses(code: string): string {
             break;
         }
 
+        // TODO: Handle one liner "...=> (...)"
+        // const oneLinerRE = new RegExp(^(?<ARROW>[ \t]*[a-zA-Z_][^\n]+\s*=>\s*)\((?<EXPR>.+)\)(?<TAIL>[;]?\n)$);
+
         const indent = match?.groups?.INDENT;
-        const indentMoreRE = new RegExp(`^(?:${indent}[ \\t]+\\S|[ \\t]*\\n)`);
+        const indentMoreRE = new RegExp(`^(?:${indent}[ \\t]+\\S|${indent}[ \\t]+\\n)`);
         const endReturnRE = new RegExp(`^${indent}\\);\n`);
 
         // Accumulate lines in "returnBlock" until matching "<INDENT>);\n" line
         const returnBlock = [lines.shift()];
         while (lines.length > 0 && (indentMoreRE.test(lines[0]) || endReturnRE.test(lines[0]))) {
+
             returnBlock.push(lines.shift());
+
+            // Done?
+            const endReturn = endReturnRE.test(returnBlock[returnBlock.length - 1]);
+            if (endReturn) {
+                break;
+            }
         }
 
         // Found valid return block -- strip its outer parentheses

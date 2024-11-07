@@ -1,8 +1,8 @@
-import { Fixture, runTestAlign } from '../../../extras-run-test';
-import { parser } from '../parser';
+import { Fixture, runTestAlign } from "../../../extras-run-test";
+import { parser } from "../parser";
 
-const desc = '--return-parentheses';
-const name = 'return parentheses';
+const desc = "--return-parentheses";
+const name = "return parentheses";
 
 const fixtures: Fixture[] = [
     {
@@ -26,6 +26,22 @@ function sum() {
 //---------------------------------------- (2)
 function sum() {
     return 1 + 2 + 3;
+}
+`,
+    },
+    {
+        name: `${name} (3) arrow function`,
+        input: `\
+//---------------------------------------- (3)
+let ident = (x) => x;
+
+export class FooClass {
+
+    ident = (x) => x;
+
+    ident2 = (x) => {
+        return x;
+    };
 }
 `,
     },

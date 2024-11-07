@@ -111,6 +111,21 @@ function sumB() {
 `,
     },
     {
+        name: `${name} (4) corner case #1 - comment after`,
+        input: `\
+//---------------------------------------- (4)
+function sumA() {
+
+    return sum(
+        sum(1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
+        sum(1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
+    ) + 4;
+
+    // Comment
+}
+`,
+    },
+    {
         name: `${name} (-1) off`,
         options: {returnParentheses: true},
         input: `\
