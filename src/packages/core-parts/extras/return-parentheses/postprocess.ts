@@ -18,7 +18,7 @@ export function postprocess(code: string, options: any): string {
 
     const detectReturnParenthesis = RE_RETURN_OR_ARROW_FN_PAREN.test(code);
     if (!returnParentheses && detectReturnParenthesis) {
-        return stripReturnParentheses(code);
+        return stripReturnParentheses(code, options);
     }
 
     return code;

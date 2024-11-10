@@ -3,15 +3,21 @@ const RE_RETURN_OR_ARROW_FN_PAREN =
     // @ts-ignore
     /^(?<INDENT>[ \t]*)(?<RETURN_OR_ARROW_FN>return|[a-zA-Z_][^\n]+\s*=>)[ \t]*\([ \t]*\n[ \t]*/;
 
+let semi = true;
+
 /**
  * Strip outer parentheses from all multi-line return statements.
  * @param code Entire code file.
  * @return {string} code file without parentheses for multi-line returns.
  */
-export function stripReturnParentheses(code: string): string {
+export function stripReturnParentheses(code: string, options?: any): string {
     let lines = code.split(/(?<=\n)/);
     const linesDone = [];
     let match;
+
+    if (options) {
+        semi = options?.semi ?? semi;
+    }
 
     while (lines.length > 0) {
         // Find next "<INDENT>return (\n" or "...=> (" line
@@ -30,12 +36,11 @@ export function stripReturnParentheses(code: string): string {
 
         const indent = match?.groups?.INDENT;
         const indentMoreRE = new RegExp(`^(?:${indent}[ \\t]+\\S|${indent}[ \\t]+\\n)`);
-        const endReturnRE = new RegExp(`^${indent}\\);\n`);
+        const endReturnRE = new RegExp(`^${indent}\\);?\n`);
 
         // Accumulate lines in "returnBlock" until matching "<INDENT>);\n" line
         const returnBlock = [lines.shift()];
         while (lines.length > 0 && (indentMoreRE.test(lines[0]) || endReturnRE.test(lines[0]))) {
-
             returnBlock.push(lines.shift());
 
             // Done?
@@ -106,7 +111,10 @@ function stripReturnOuterParentheses(returnBlock: string[]): string {
     const firstLine = returnBlock.splice(0, 2).join("").replace(RE_RETURN_OR_ARROW_FN_PAREN, "$1$2 ");
 
     returnBlock.splice(returnBlock.length - 1, 1); // remove last line ");"
-    returnBlock.push((returnBlock.pop() || "").replace(/\n$/, ";\n")); // append ";" to the (new) last line
+    if (semi) {
+        // Append ";" to the (new) last line as necessary
+        returnBlock.push((returnBlock.pop() || "").replace(/(?<!;)\n$/, ";\n"));
+    }
 
     // Dedent remaining lines if necessary
     if (shouldDedent) {

@@ -3,11 +3,11 @@ Test separately against multiple versions of Prettier:
 
     tests    $ cd v2-test
     v2-test  $ pnpm i
-    v2-test  $ npx vitest run babel/extras typescript/extras
+    v2-test  $ npx vitest run babel/extras typescript/extras angular/extras
 
     tests    $ cd v3-test
     v3-test  $ pnpm i
-    v3-test  $ npx vitest run babel/extras typescript/extras
+    v3-test  $ npx vitest run babel/extras typescript/extras angular/extras
 
 
 Babel (Javascript) tests:
