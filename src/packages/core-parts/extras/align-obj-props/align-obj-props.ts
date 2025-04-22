@@ -280,7 +280,7 @@ function alignObjectPropLevel(segs: any[], idx: number[], indent: number) {
  * RegExp for property key 'key:', '[key]:', '"key":', "'key':", '#key:', 'key$:', etc
  */
 function getRegExpProperty(indent: number) {
-    return new RegExp(`^[ ]{${indent}}((?:[^'" :]+|(['"])[^\\2\\n]+?\\2|\\[[^\\]]+\\])\\??):`);
+    return new RegExp(`^[ ]{${indent}}((?:[^'" :(]+|(['"])[^\\2\\n]+?\\2|\\[[^\\]]+\\])\\??):`);
 }
 
 /**

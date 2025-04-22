@@ -1,0 +1,28 @@
+import { Fixture, runTestAlign } from '../../../extras-run-test';
+const parser = '';
+
+const desc = '--align-object-properties';
+const name = 'HTML corner case';
+
+const fixtures: Fixture[] = [
+    {
+        name: `${name} (1) '(document:keydown...)'`,
+        options: { filepath: "test.component.html" },
+        input: `\
+<!-- -------------------------------------- (1) -->
+@if (something) {
+    <div>
+        @for (x of stuff) {
+            <div></div>
+        }
+    </div>
+    <div
+        id="foo-something-really-long-to-force-wrapping"
+        (document:keydown.meta.control.a)="onJumpToAppendix()"
+    ></div>
+}
+`,
+    },
+];
+
+runTestAlign({ desc, parser, fixtures });
